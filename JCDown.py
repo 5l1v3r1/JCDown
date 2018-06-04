@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 '''
 # =============================================================================
-#      FileName: forum_image_downloader.py
+#      FileName: JCDown.py
 #          Desc: download images from forum such as 蜂鸟 and 贴吧
 #        Author: Jase Chen
 #         Email: xxmm@live.cn
 #      HomePage: https://jase.im/
 #       Version: 0.0.1
 #       License: GPLv2
-#    LastChange: 2018-06-02 22:58:19
+#    LastChange: 2018-06-04 08:52:42
 #       History:
 # =============================================================================
 '''
@@ -82,7 +82,7 @@ class MainWindow(basewin.baseMainWindow):
 
     def about_menuItemOnMenuSelection(self, event):
         # 关于本程序
-        ,bout_program = '''本程序用来下载论坛中的图片
+        about_program = '''本程序用来下载论坛中的图片
 目前支持的网站：
 1. bbs.fengniao.com
 2. tieba.baidu.com

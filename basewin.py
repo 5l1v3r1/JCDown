@@ -80,7 +80,7 @@ class baseMainWindow ( wx.Frame ):
 		self.location_lable_staticText.Wrap( -1 )
 		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.LEFT|wx.TOP, 24 )
 		
-		self.image_local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, u"000", u"Select a folder", wx.DefaultPosition, wx.Size( 450,-1 ), wx.DIRP_DEFAULT_STYLE )
+		self.image_local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 450,-1 ), wx.DIRP_DEFAULT_STYLE )
 		self.image_local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		gbSizer2.Add( self.image_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.TOP, 18 )

@@ -69,6 +69,10 @@ class MainWindow(basewin.baseMainWindow):
     def image_download_buttonOnButtonClick(self, event):
         urls = self.image_urls_input()
         local = self.image_local_location()
+        print(self.is_individual())
+
+    def is_individual(self):
+        return self.image_save_individual_checkBox.GetValue()
 
     def get_large_image_links(self):
         pass

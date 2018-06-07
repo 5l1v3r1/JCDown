@@ -80,10 +80,10 @@ class baseMainWindow ( wx.Frame ):
 		self.location_lable_staticText.Wrap( -1 )
 		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.LEFT|wx.TOP, 24 )
 		
-		self.image_local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 450,-1 ), wx.DIRP_DEFAULT_STYLE )
+		self.image_local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 420,-1 ), wx.DIRP_DEFAULT_STYLE )
 		self.image_local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
-		gbSizer2.Add( self.image_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.TOP, 18 )
+		gbSizer2.Add( self.image_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.RIGHT|wx.TOP, 18 )
 		
 		
 		bSizer10.Add( gbSizer2, 0, wx.SHAPED, 5 )
@@ -92,8 +92,9 @@ class baseMainWindow ( wx.Frame ):
 		gbSizer4.SetFlexibleDirection( wx.BOTH )
 		gbSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
-		self.image_download_button = wx.Button( self.forum_image_panel, wx.ID_ANY, u"开始下载", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gbSizer4.Add( self.image_download_button, wx.GBPosition( 1, 2 ), wx.GBSpan( 1, 1 ), wx.LEFT, 103 )
+		gbSizer4.SetMinSize( wx.Size( 530,-1 ) ) 
+		self.image_download_button = wx.Button( self.forum_image_panel, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.Size( -1,-1 ), 0 )
+		gbSizer4.Add( self.image_download_button, wx.GBPosition( 1, 2 ), wx.GBSpan( 1, 1 ), wx.LEFT, 73 )
 		
 		self.image_save_individual_checkBox = wx.CheckBox( self.forum_image_panel, wx.ID_ANY, u"每个页面的图片保存到对应的子文件夹中", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gbSizer4.Add( self.image_save_individual_checkBox, wx.GBPosition( 1, 1 ), wx.GBSpan( 1, 1 ), wx.EXPAND|wx.LEFT, 87 )

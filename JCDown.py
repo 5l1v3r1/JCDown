@@ -57,21 +57,24 @@ class MainWindow(basewin.baseMainWindow):
                         f.write(requests.get(img).content)
             print('Download done...')
 
-    def urls_input(self):
+    def image_urls_input(self):
         urls_list = []
-        for url in StringIO(self.URLS_textCtrl.GetValue()).readlines():
+        for url in StringIO(self.image_urls_textCtrl.GetValue()).readlines():
             urls_list.append(url)
         return urls_list
 
-    def local_save_location(self):
-        return self.local_dirPicker.GetPath()
+    def image_local_location(self):
+        return self.image_local_dirPicker.GetPath()
 
-    def download_buttonOnButtonClick(self, event):
-        urls = self.urls_input()
-        local = self.local_save_location()
+    def image_download_buttonOnButtonClick(self, event):
+        urls = self.image_urls_input()
+        local = self.image_local_location()
 
     def get_large_image_links(self):
         pass
+
+    def exit_menuItemOnMenuSelection(self, event):
+        wx.CallAfter(self.Destroy)
 
     def next_link(self):
         pass
@@ -88,7 +91,8 @@ class MainWindow(basewin.baseMainWindow):
 2. tieba.baidu.com
 
 后续会新增更多网站
-由于这些网站调整导致图片不能下载可以通过设置配置程序修复，或者联系我
+由于这些网站调整导致图片不能下载可以通过设置配置程序修复，
+或者联系我
 Email: xxmm@live.cn'''
         wx.MessageBox(about_program, 'About', wx.OK | wx.ICON_INFORMATION)
 
@@ -99,12 +103,6 @@ def main():
     main_win.init_main_window()
     main_win.Show()
     app.MainLoop()
-    # url = 'http://tieba.baidu.com/p/2166231880'
-    # # 在当前目录下请先创建image文件夹
-    # path = 'image'
-    # crawler = Image_Downloader(url)
-    # img_urls = crawler.get_image_links()
-    # crawler.download_img(img_urls, path=path)
 
 
 if __name__ == "__main__":

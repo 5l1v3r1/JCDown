@@ -17,7 +17,7 @@ import wx.xrc
 class baseMainWindow ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"图片下载器", pos = wx.DefaultPosition, size = wx.Size( 582,415 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"JCDown", pos = wx.DefaultPosition, size = wx.Size( 582,415 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHints( wx.Size( 582,415 ), wx.Size( 582,415 ) )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -63,8 +63,8 @@ class baseMainWindow ( wx.Frame ):
 		
 		bSizer4.Add( ( 0, 0), 0, wx.BOTTOM|wx.TOP, 2 )
 		
-		self.URLS_textCtrl = wx.TextCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, wx.Point( -1,-1 ), wx.Size( 520,188 ), wx.TE_MULTILINE )
-		bSizer4.Add( self.URLS_textCtrl, 1, wx.LEFT|wx.RIGHT, 25 )
+		self.image_urls_textCtrl = wx.TextCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, wx.Point( -1,-1 ), wx.Size( 520,188 ), wx.TE_MULTILINE )
+		bSizer4.Add( self.image_urls_textCtrl, 1, wx.LEFT|wx.RIGHT, 25 )
 		
 		
 		bSizer10.Add( bSizer4, 1, wx.EXPAND, 5 )
@@ -80,10 +80,10 @@ class baseMainWindow ( wx.Frame ):
 		self.location_lable_staticText.Wrap( -1 )
 		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.LEFT|wx.TOP, 24 )
 		
-		self.local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 450,-1 ), wx.DIRP_DEFAULT_STYLE )
-		self.local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		self.image_local_dirPicker = wx.DirPickerCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 450,-1 ), wx.DIRP_DEFAULT_STYLE )
+		self.image_local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
-		gbSizer2.Add( self.local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.TOP, 18 )
+		gbSizer2.Add( self.image_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.TOP, 18 )
 		
 		
 		bSizer10.Add( gbSizer2, 0, wx.SHAPED, 5 )
@@ -92,11 +92,11 @@ class baseMainWindow ( wx.Frame ):
 		gbSizer4.SetFlexibleDirection( wx.BOTH )
 		gbSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
-		self.download_button = wx.Button( self.forum_image_panel, wx.ID_ANY, u"开始下载", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gbSizer4.Add( self.download_button, wx.GBPosition( 1, 2 ), wx.GBSpan( 1, 1 ), wx.LEFT, 103 )
+		self.image_download_button = wx.Button( self.forum_image_panel, wx.ID_ANY, u"开始下载", wx.DefaultPosition, wx.DefaultSize, 0 )
+		gbSizer4.Add( self.image_download_button, wx.GBPosition( 1, 2 ), wx.GBSpan( 1, 1 ), wx.LEFT, 103 )
 		
-		self.save_individual_checkBox = wx.CheckBox( self.forum_image_panel, wx.ID_ANY, u"每个页面的图片保存到对应的子文件夹中", wx.DefaultPosition, wx.DefaultSize, 0 )
-		gbSizer4.Add( self.save_individual_checkBox, wx.GBPosition( 1, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 87 )
+		self.image_save_individual_checkBox = wx.CheckBox( self.forum_image_panel, wx.ID_ANY, u"每个页面的图片保存到对应的子文件夹中", wx.DefaultPosition, wx.DefaultSize, 0 )
+		gbSizer4.Add( self.image_save_individual_checkBox, wx.GBPosition( 1, 1 ), wx.GBSpan( 1, 1 ), wx.EXPAND|wx.LEFT, 87 )
 		
 		
 		bSizer10.Add( gbSizer4, 1, 0, 0 )
@@ -118,22 +118,26 @@ class baseMainWindow ( wx.Frame ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.Bind( wx.EVT_MENU, self.exit_menuItemOnMenuSelection, id = self.exit_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.rule_menuItemOnMenuSelection, id = self.rule_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
-		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
+		self.image_download_button.Bind( wx.EVT_BUTTON, self.image_download_buttonOnButtonClick )
 	
 	def __del__( self ):
 		pass
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def exit_menuItemOnMenuSelection( self, event ):
+		event.Skip()
+	
 	def rule_menuItemOnMenuSelection( self, event ):
 		event.Skip()
 	
 	def about_menuItemOnMenuSelection( self, event ):
 		event.Skip()
 	
-	def download_buttonOnButtonClick( self, event ):
+	def image_download_buttonOnButtonClick( self, event ):
 		event.Skip()
 	
 

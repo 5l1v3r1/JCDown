@@ -52,14 +52,16 @@ class baseMainWindow ( wx.Frame ):
 		self.video_panel = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer101 = wx.BoxSizer( wx.VERTICAL )
 		
-		bSizer41 = wx.BoxSizer( wx.VERTICAL )
+		fgSizer6 = wx.FlexGridSizer( 0, 1, 0, 0 )
+		fgSizer6.SetFlexibleDirection( wx.BOTH )
+		fgSizer6.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
 		self.urls_lable_staticText1 = wx.StaticText( self.video_panel, wx.ID_ANY, u"输入网址", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
 		self.urls_lable_staticText1.Wrap( -1 )
-		bSizer41.Add( self.urls_lable_staticText1, 0, wx.LEFT, 5 )
+		fgSizer6.Add( self.urls_lable_staticText1, 0, wx.LEFT, 5 )
 		
 		
-		bSizer41.Add( ( 0, 0), 0, wx.BOTTOM|wx.TOP, 2 )
+		fgSizer6.Add( ( 0, 0), 0, wx.BOTTOM|wx.TOP, 2 )
 		
 		gSizer1 = wx.GridSizer( 0, 2, 0, 0 )
 		
@@ -67,20 +69,22 @@ class baseMainWindow ( wx.Frame ):
 		gSizer1.Add( self.video_url_textCtrl, 0, wx.ALL, 5 )
 		
 		self.fetch_button = wx.Button( self.video_panel, wx.ID_ANY, u"获取", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
-		gSizer1.Add( self.fetch_button, 0, wx.ALIGN_RIGHT|wx.ALL, 5 )
+		gSizer1.Add( self.fetch_button, 0, wx.ALIGN_RIGHT|wx.ALIGN_TOP|wx.ALL, 5 )
 		
 		
-		bSizer41.Add( gSizer1, 1, wx.EXPAND, 5 )
+		fgSizer6.Add( gSizer1, 1, wx.EXPAND, 5 )
+		
+		gSizer3 = wx.GridSizer( 0, 2, 0, 0 )
 		
 		Stream_listBoxChoices = []
 		self.Stream_listBox = wx.ListBox( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), Stream_listBoxChoices, 0 )
-		bSizer41.Add( self.Stream_listBox, 0, wx.ALL, 5 )
+		gSizer3.Add( self.Stream_listBox, 0, wx.ALL, 5 )
 		
 		
-		bSizer101.Add( bSizer41, 1, wx.EXPAND, 5 )
+		fgSizer6.Add( gSizer3, 1, wx.EXPAND, 5 )
 		
-		self.m_staticline11 = wx.StaticLine( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer101.Add( self.m_staticline11, 0, wx.EXPAND|wx.TOP, 10 )
+		
+		bSizer101.Add( fgSizer6, 1, wx.EXPAND, 5 )
 		
 		
 		self.video_panel.SetSizer( bSizer101 )
@@ -126,54 +130,54 @@ class baseMainWindow ( wx.Frame ):
 		
 		self.location_lable_staticText = wx.StaticText( self, wx.ID_ANY, u"保存位置：", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.location_lable_staticText.Wrap( -1 )
-		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL|wx.LEFT|wx.TOP, 10 )
+		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 15 )
 		
-		self.save_local_dirPicker = wx.DirPickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 465,-1 ), wx.DIRP_DEFAULT_STYLE )
+		self.save_local_dirPicker = wx.DirPickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 472,-1 ), wx.DIRP_DEFAULT_STYLE )
 		self.save_local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
-		gbSizer2.Add( self.save_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 10 )
+		gbSizer2.Add( self.save_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL, 15 )
 		
 		
-		bSizer9.Add( gbSizer2, 0, wx.SHAPED, 5 )
+		bSizer9.Add( gbSizer2, 0, wx.SHAPED, 0 )
 		
-		gSizer4 = wx.GridSizer( 0, 2, 0, 0 )
+		gbSizer4 = wx.GridBagSizer( 0, 0 )
+		gbSizer4.SetFlexibleDirection( wx.BOTH )
+		gbSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
-		bSizer22 = wx.BoxSizer( wx.VERTICAL )
-		
-		fgSizer4 = wx.FlexGridSizer( 0, 0, 0, 0 )
-		fgSizer4.SetFlexibleDirection( wx.BOTH )
-		fgSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		fgSizer4.SetMinSize( wx.Size( 560,-1 ) ) 
 		self.save_individual_checkBox = wx.CheckBox( self, wx.ID_ANY, u"保存到对应子文件夹中", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		fgSizer4.Add( self.save_individual_checkBox, 0, wx.ALL, 10 )
+		gbSizer4.Add( self.save_individual_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
 		
-		fgSizer1 = wx.FlexGridSizer( 1, 0, 0, 0 )
-		fgSizer1.SetFlexibleDirection( wx.BOTH )
-		fgSizer1.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		gbSizer3 = wx.GridBagSizer( 0, 0 )
+		gbSizer3.SetFlexibleDirection( wx.BOTH )
+		gbSizer3.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
 		self.proxy_checkBox = wx.CheckBox( self, wx.ID_ANY, u"Proxy:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.proxy_checkBox.SetForegroundColour( wx.Colour( 0, 0, 0 ) )
 		
-		fgSizer1.Add( self.proxy_checkBox, 0, wx.ALL, 10 )
+		gbSizer3.Add( self.proxy_checkBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
 		
 		self.m_textCtrl9 = wx.TextCtrl( self, wx.ID_ANY, u"socks5://127.0.0.1:1086/", wx.Point( -1,-1 ), wx.Size( 180,-1 ), 0 )
-		fgSizer1.Add( self.m_textCtrl9, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		gbSizer3.Add( self.m_textCtrl9, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
 		
 		
-		fgSizer4.Add( fgSizer1, 1, wx.EXPAND, 5 )
+		gbSizer4.Add( gbSizer3, wx.GBPosition( 0, 2 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
 		
-		self.download_button = wx.Button( self, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
-		fgSizer4.Add( self.download_button, 0, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 44 )
+		gbSizer21 = wx.GridBagSizer( 0, 0 )
+		gbSizer21.SetFlexibleDirection( wx.BOTH )
+		gbSizer21.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText5.Wrap( -1 )
+		gbSizer21.Add( self.m_staticText5, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		
+		self.download_button = wx.Button( self, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.Size( -1,-1 ), 0 )
+		gbSizer21.Add( self.download_button, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		
-		bSizer22.Add( fgSizer4, 1, wx.EXPAND, 5 )
+		gbSizer4.Add( gbSizer21, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		gSizer4.Add( bSizer22, 1, 0, 0 )
-		
-		
-		bSizer9.Add( gSizer4, 1, wx.EXPAND, 5 )
+		bSizer9.Add( gbSizer4, 1, wx.EXPAND, 0 )
 		
 		
 		bSizer1.Add( bSizer9, 1, wx.EXPAND, 5 )
@@ -181,21 +185,26 @@ class baseMainWindow ( wx.Frame ):
 		
 		self.SetSizer( bSizer1 )
 		self.Layout()
-		self.statusBar = self.CreateStatusBar( 1, wx.STB_SIZEGRIP, wx.ID_ANY )
+		self.statusBar = self.CreateStatusBar( 5, wx.STB_SIZEGRIP, wx.ID_ANY )
 		
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.baseMainWindowOnClose )
 		self.Bind( wx.EVT_MENU, self.exit_menuItemOnMenuSelection, id = self.exit_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.rule_menuItemOnMenuSelection, id = self.rule_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
 		self.fetch_button.Bind( wx.EVT_BUTTON, self.fetch_buttonOnButtonClick )
+		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
 	
 	def __del__( self ):
 		pass
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def baseMainWindowOnClose( self, event ):
+		event.Skip()
+	
 	def exit_menuItemOnMenuSelection( self, event ):
 		event.Skip()
 	
@@ -206,6 +215,9 @@ class baseMainWindow ( wx.Frame ):
 		event.Skip()
 	
 	def fetch_buttonOnButtonClick( self, event ):
+		event.Skip()
+	
+	def download_buttonOnButtonClick( self, event ):
 		event.Skip()
 	
 

@@ -21,11 +21,24 @@ import re
 from lxml import html
 import os
 from io import StringIO
+import JYoutube
+import threading
+from time import sleep
+import re
 
 
 class MainWindow(basewin.baseMainWindow):
-    def init_main_window(self, url=None):
-        self.url = url
+    def init_main_window(self):
+        self.JCDown = JYoutube.JYoutube()
+        self.url = ''
+        self.localDir = ''
+        self.statusBar_thread()
+        self.status = ''
+        self.statusBar.SetStatusWidths([90, 90, 120, 190, 100])
+        self.statusBar_thread()
+
+    def baseMainWindowOnClose(self, event):
+        self.Destroy()
 
     def get_image_links(self):
         # 图片地址
@@ -73,6 +86,46 @@ class MainWindow(basewin.baseMainWindow):
 
     def is_individual(self):
         return self.image_save_individual_checkBox.GetValue()
+
+    def fetch_buttonOnButtonClick(self, event):
+        pass
+
+    def download_buttonOnButtonClick(self, event):
+        if not self.video_url_textCtrl.GetValue(
+        ) or not self.save_local_dirPicker.Path:
+            print('No URL or Path...')
+        else:
+            self.url = self.video_url_textCtrl.GetValue()
+            self.localDir = self.save_local_dirPicker.Path
+            print(self.url)
+            print(self.localDir)
+            self.JCDown.set_url(self.url)
+            self.JCDown.set_localDir(self.localDir)
+            self.JCDown.download()
+            self.statusBar.SetStatusText('即将开始下载')
+            self.download_button.Enable(False)
+
+    def setStatusbar(self):
+        while True:
+            if self.JCDown.status[0] == 'downloading':
+                self.status = self.JCDown.status
+                self.statusBar.SetStatusText(self.status[0])
+                self.statusBar.SetStatusText(self.status[1], 1)
+                self.statusBar.SetStatusText(self.status[2], 2)
+                self.statusBar.SetStatusText(self.status[3], 3)
+                self.statusBar.SetStatusText(self.status[4], 4)
+            elif self.JCDown.status[0] == 'Done':
+                self.download_button.Enable(True)
+                self.statusBar.SetStatusText('Done')
+                for i in range(1, 5):
+                    self.statusBar.SetStatusText('', i)
+                sleep(3)
+                self.statusBar.SetStatusText('')
+
+    def statusBar_thread(self):
+        statusBar_thread = threading.Thread(
+            target=self.setStatusbar, daemon=True)
+        statusBar_thread.start()
 
     def get_large_image_links(self):
         pass

@@ -33,9 +33,10 @@ class MainWindow(basewin.baseMainWindow):
         self.url = ''
         self.localDir = ''
         self.statusBar_thread()
-        self.status = ''
-        self.statusBar.SetStatusWidths([90, 90, 120, 190, 100])
+        self.status = 5 * ['']
+        self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
         self.statusBar_thread()
+        self.stop_button.Enable(False)
 
     def baseMainWindowOnClose(self, event):
         self.Destroy()
@@ -84,6 +85,11 @@ class MainWindow(basewin.baseMainWindow):
         local = self.image_local_location()
         print(self.is_individual())
 
+    def set_proxy(self):
+        if self.proxy_checkBox.GetValue():
+            proxy = self.proxy_textCtrl.GetValue()
+            self.JCDown.set_proxy(proxy)
+
     def is_individual(self):
         return self.image_save_individual_checkBox.GetValue()
 
@@ -93,6 +99,7 @@ class MainWindow(basewin.baseMainWindow):
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
         ) or not self.save_local_dirPicker.Path:
+            self.statusBar.SetStatusText('No URL or Path')
             print('No URL or Path...')
         else:
             self.url = self.video_url_textCtrl.GetValue()
@@ -101,13 +108,20 @@ class MainWindow(basewin.baseMainWindow):
             print(self.localDir)
             self.JCDown.set_url(self.url)
             self.JCDown.set_localDir(self.localDir)
+            self.set_proxy()
             self.JCDown.download()
+            self.JCDown.status[0] = 'wait'
             self.statusBar.SetStatusText('即将开始下载')
             self.download_button.Enable(False)
+            # self.stop_button.Enable(True)
+
+    def stop_buttonOnButtonClick(self, event):
+        self.JCDown.stop()
 
     def setStatusbar(self):
         while True:
-            if self.JCDown.status[0] == 'downloading':
+            if self.JCDown.status[0] == 'Downloading':
+                self.stop_button.Enable(True)
                 self.status = self.JCDown.status
                 self.statusBar.SetStatusText(self.status[0])
                 self.statusBar.SetStatusText(self.status[1], 1)
@@ -117,10 +131,19 @@ class MainWindow(basewin.baseMainWindow):
             elif self.JCDown.status[0] == 'Done':
                 self.download_button.Enable(True)
                 self.statusBar.SetStatusText('Done')
+                self.stop_button.Enable(False)
                 for i in range(1, 5):
                     self.statusBar.SetStatusText('', i)
-                sleep(3)
-                self.statusBar.SetStatusText('')
+            elif self.JCDown.status[0] == 'Error':
+                self.download_button.Enable(True)
+                self.statusBar.SetStatusText('Error')
+                self.stop_button.Enable(False)
+                for i in range(1, 5):
+                    self.statusBar.SetStatusText('', i)
+            elif self.JCDown.status[0] == 'wait':
+                self.statusBar.SetStatusText('即将开始下载')
+            else:
+                self.SetStatusText('')
 
     def statusBar_thread(self):
         statusBar_thread = threading.Thread(
@@ -142,15 +165,16 @@ class MainWindow(basewin.baseMainWindow):
 
     def about_menuItemOnMenuSelection(self, event):
         # 关于本程序
-        about_program = '''本程序用来下载论坛中的图片
-目前支持的网站：
-1. bbs.fengniao.com
-2. tieba.baidu.com
+        about_program = '''本程序用来下载视频及图片
+* 视频支持国内外主流的网站
+* 图片目前支持的网站：
+    1. bbs.fengniao.com
+    2. tieba.baidu.com
 
 后续会新增更多网站
-由于这些网站调整导致图片不能下载可以通过设置配置程序修复，
-或者联系我
-Email: xxmm@live.cn'''
+由于网站调整导致不能下载可以联系我
+Email: xxmm@live.cn
+Created by Jase Chen'''
         wx.MessageBox(about_program, 'About', wx.OK | wx.ICON_INFORMATION)
 
 

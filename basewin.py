@@ -30,7 +30,7 @@ class baseMainWindow ( wx.Frame ):
 		self.menubar.Append( self.file_menu, u"文件" ) 
 		
 		self.edit_menu = wx.Menu()
-		self.rule_menuItem = wx.MenuItem( self.edit_menu, wx.ID_ANY, u"Rule", wx.EmptyString, wx.ITEM_NORMAL )
+		self.rule_menuItem = wx.MenuItem( self.edit_menu, wx.ID_ANY, u"Setting", wx.EmptyString, wx.ITEM_NORMAL )
 		self.edit_menu.Append( self.rule_menuItem )
 		
 		self.menubar.Append( self.edit_menu, u"编辑" ) 
@@ -118,7 +118,7 @@ class baseMainWindow ( wx.Frame ):
 		self.forum_image_panel.SetSizer( bSizer10 )
 		self.forum_image_panel.Layout()
 		bSizer10.Fit( self.forum_image_panel )
-		self.m_notebook2.AddPage( self.forum_image_panel, u"论坛图片", False )
+		self.m_notebook2.AddPage( self.forum_image_panel, u"图片", False )
 		
 		bSizer1.Add( self.m_notebook2, 1, wx.EXPAND |wx.ALL, 5 )
 		
@@ -132,52 +132,38 @@ class baseMainWindow ( wx.Frame ):
 		self.location_lable_staticText.Wrap( -1 )
 		gbSizer2.Add( self.location_lable_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 15 )
 		
-		self.save_local_dirPicker = wx.DirPickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 472,-1 ), wx.DIRP_DEFAULT_STYLE )
+		self.save_local_dirPicker = wx.DirPickerCtrl( self, wx.ID_ANY, wx.EmptyString, u"Select a folder", wx.DefaultPosition, wx.Size( 476,-1 ), wx.DIRP_DEFAULT_STYLE )
 		self.save_local_dirPicker.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
-		gbSizer2.Add( self.save_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL, 15 )
+		gbSizer2.Add( self.save_local_dirPicker, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 20 )
 		
 		
 		bSizer9.Add( gbSizer2, 0, wx.SHAPED, 0 )
-		
-		gbSizer4 = wx.GridBagSizer( 0, 0 )
-		gbSizer4.SetFlexibleDirection( wx.BOTH )
-		gbSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		self.save_individual_checkBox = wx.CheckBox( self, wx.ID_ANY, u"保存到对应子文件夹中", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		gbSizer4.Add( self.save_individual_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
 		
 		gbSizer3 = wx.GridBagSizer( 0, 0 )
 		gbSizer3.SetFlexibleDirection( wx.BOTH )
 		gbSizer3.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
+		self.save_individual_checkBox = wx.CheckBox( self, wx.ID_ANY, u"保存到对应子文件夹中", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		gbSizer3.Add( self.save_individual_checkBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
 		self.proxy_checkBox = wx.CheckBox( self, wx.ID_ANY, u"Proxy:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.proxy_checkBox.SetValue(True) 
 		self.proxy_checkBox.SetForegroundColour( wx.Colour( 0, 0, 0 ) )
 		
-		gbSizer3.Add( self.proxy_checkBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
+		gbSizer3.Add( self.proxy_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
 		
-		self.m_textCtrl9 = wx.TextCtrl( self, wx.ID_ANY, u"socks5://127.0.0.1:1086/", wx.Point( -1,-1 ), wx.Size( 180,-1 ), 0 )
-		gbSizer3.Add( self.m_textCtrl9, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL, 5 )
+		self.proxy_textCtrl = wx.TextCtrl( self, wx.ID_ANY, u"socks5://127.0.0.1:1080/", wx.Point( -1,-1 ), wx.Size( 180,-1 ), 0 )
+		gbSizer3.Add( self.proxy_textCtrl, wx.GBPosition( 0, 2 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
-		
-		gbSizer4.Add( gbSizer3, wx.GBPosition( 0, 2 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
-		
-		gbSizer21 = wx.GridBagSizer( 0, 0 )
-		gbSizer21.SetFlexibleDirection( wx.BOTH )
-		gbSizer21.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText5.Wrap( -1 )
-		gbSizer21.Add( self.m_staticText5, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		self.stop_button = wx.Button( self, wx.ID_ANY, u"暂停", wx.DefaultPosition, wx.DefaultSize, 0 )
+		gbSizer3.Add( self.stop_button, wx.GBPosition( 1, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 40 )
 		
 		self.download_button = wx.Button( self, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.Size( -1,-1 ), 0 )
-		gbSizer21.Add( self.download_button, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		gbSizer3.Add( self.download_button, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 40 )
 		
 		
-		gbSizer4.Add( gbSizer21, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_RIGHT|wx.ALL|wx.EXPAND, 5 )
-		
-		
-		bSizer9.Add( gbSizer4, 1, wx.EXPAND, 0 )
+		bSizer9.Add( gbSizer3, 1, wx.ALL|wx.SHAPED, 10 )
 		
 		
 		bSizer1.Add( bSizer9, 1, wx.EXPAND, 5 )
@@ -195,6 +181,7 @@ class baseMainWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.rule_menuItemOnMenuSelection, id = self.rule_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
 		self.fetch_button.Bind( wx.EVT_BUTTON, self.fetch_buttonOnButtonClick )
+		self.stop_button.Bind( wx.EVT_BUTTON, self.stop_buttonOnButtonClick )
 		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
 	
 	def __del__( self ):
@@ -215,6 +202,9 @@ class baseMainWindow ( wx.Frame ):
 		event.Skip()
 	
 	def fetch_buttonOnButtonClick( self, event ):
+		event.Skip()
+	
+	def stop_buttonOnButtonClick( self, event ):
 		event.Skip()
 	
 	def download_buttonOnButtonClick( self, event ):

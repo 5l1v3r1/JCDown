@@ -122,8 +122,6 @@ class MainWindow(basewin.baseMainWindow):
     def setStatusbar(self):
         try:
             while True:
-                # self.status = self.JCDown.status
-                # print(self.JCDown.status)
                 if self.JCDown.status[0] == 'Downloading':
                     self.download_button.Enable(False)
                     self.stop_button.Enable(True)
@@ -140,8 +138,6 @@ class MainWindow(basewin.baseMainWindow):
                     self.status[0] = '即将开始下载'
                 elif self.JCDown.status[0] == 'check':
                     self.status[0] = 'Check Input!'
-                    # print('checkcheck')
-                    # if self.status[0] == 'Input Check!':
                 elif self.JCDown.status[0] == '':
                     self.status[0] = ''
                 self.statusBar.SetStatusText(self.status[0])

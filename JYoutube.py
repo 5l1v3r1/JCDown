@@ -50,6 +50,7 @@ class JYoutube(object):
             'socket_timeout': 10
         }
         self.status = 5 * ['']
+        self.status_monitor()
 
     def my_hook(self, d):
         if d['status'] == 'downloading':
@@ -68,18 +69,17 @@ class JYoutube(object):
         elif d['status'] == 'finished':
             print('Done downloading...')
             self.status[0] = 'Done'
-            sleep(3)
-            if self.status[0] == 'Done':
-                self.status[0] = ''
         elif d['status'] == 'error':
             print('Error')
             self.status[0] = 'Error'
-            sleep(3)
-            if self.status[0] == 'Error':
-                self.status[0] = ''
 
     def set_proxy(self, proxy):
-        self._ydl_opts['proxy'] = proxy
+        # 设置代理，为空时清除代理
+        if proxy:
+            self._ydl_opts['proxy'] = proxy
+        else:
+            if 'proxy' in self._ydl_opts:
+                self._ydl_opts.pop('proxy')
 
     def set_url(self, url):
         self._url = url
@@ -89,8 +89,43 @@ class JYoutube(object):
 
     def set_localDir(self, path):
         if not os.path.exists(path):
-            os.makedirs(path)
-        os.chdir(path)
+            try:
+                os.makedirs(path)
+                os.chdir(path)
+            except:
+                self.status[0] = 'Error'
+                self.status[1] = 'Dir Wrong!'
+                print('dirmake error')
+                sleep(3)
+                if self.status[0] == 'Error':
+                    for i in range(5):
+                        self.status[i] = ''
+                return
+        else:
+            os.chdir(path)
+
+    def status_thread(self):
+        while True:
+            if self.status[0] == 'check':
+                sleep(3)
+                if self.status[0] == 'check':
+                    for i in range(5):
+                        self.status[i] = ''
+            elif self.status[0] == 'Error':
+                sleep(3)
+                if self.status[0] == 'Error':
+                    for i in range(5):
+                        self.status[i] = ''
+            elif self.status[0] == 'Done':
+                sleep(3)
+                if self.status[0] == 'Done':
+                    for i in range(5):
+                        self.status[i] = ''
+
+
+    def status_monitor(self):
+        self.st_thread = threading.Thread(target=self.status_thread, daemon=True)
+        self.st_thread.start()
 
     def download_thread(self):
         try:
@@ -98,9 +133,6 @@ class JYoutube(object):
                 ydl.download([self._url])
         except:
             self.status[0] = 'Error'
-            sleep(3)
-            if self.status[0] == 'Error':
-                self.status[0] = ''
 
     def download(self):
         self.dl_thread = threading.Thread(target=self.download_thread, daemon=True)
@@ -108,6 +140,8 @@ class JYoutube(object):
 
     def stop(self):
         self.terminate_thread(self.dl_thread)
+        for i in range(1, 5):
+            self.status[i] = ''
 
     def terminate_thread(self, thread):
         # 由于youtube_dl一旦运行无法停止，所以停止下载的话只能强制停止该线程

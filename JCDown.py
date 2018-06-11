@@ -32,7 +32,6 @@ class MainWindow(basewin.baseMainWindow):
         self.JCDown = JYoutube.JYoutube()
         self.url = ''
         self.localDir = ''
-        self.statusBar_thread()
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
         self.statusBar_thread()
@@ -88,7 +87,9 @@ class MainWindow(basewin.baseMainWindow):
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():
             proxy = self.proxy_textCtrl.GetValue()
-            self.JCDown.set_proxy(proxy)
+        else:
+            proxy = ''
+        self.JCDown.set_proxy(proxy)
 
     def is_individual(self):
         return self.image_save_individual_checkBox.GetValue()
@@ -99,9 +100,11 @@ class MainWindow(basewin.baseMainWindow):
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
         ) or not self.save_local_dirPicker.Path:
-            self.statusBar.SetStatusText('No URL or Path')
+            self.JCDown.status[0] = 'check'
+            print(self.JCDown.status)
             print('No URL or Path...')
         else:
+            print(self.notebook.GetSelection())
             self.url = self.video_url_textCtrl.GetValue()
             self.localDir = self.save_local_dirPicker.Path
             print(self.url)
@@ -109,41 +112,45 @@ class MainWindow(basewin.baseMainWindow):
             self.JCDown.set_url(self.url)
             self.JCDown.set_localDir(self.localDir)
             self.set_proxy()
-            self.JCDown.download()
             self.JCDown.status[0] = 'wait'
-            self.statusBar.SetStatusText('即将开始下载')
+            self.JCDown.download()
             self.download_button.Enable(False)
-            # self.stop_button.Enable(True)
 
     def stop_buttonOnButtonClick(self, event):
         self.JCDown.stop()
 
     def setStatusbar(self):
-        while True:
-            if self.JCDown.status[0] == 'Downloading':
-                self.stop_button.Enable(True)
-                self.status = self.JCDown.status
+        try:
+            while True:
+                # self.status = self.JCDown.status
+                # print(self.JCDown.status)
+                if self.JCDown.status[0] == 'Downloading':
+                    self.download_button.Enable(False)
+                    self.stop_button.Enable(True)
+                    self.status = self.JCDown.status
+                elif self.JCDown.status[0] == 'Done':
+                    self.download_button.Enable(True)
+                    self.stop_button.Enable(False)
+                    self.status = self.JCDown.status
+                elif self.JCDown.status[0] == 'Error':
+                    self.download_button.Enable(True)
+                    self.stop_button.Enable(False)
+                    self.status = self.JCDown.status
+                elif self.JCDown.status[0] == 'wait':
+                    self.status[0] = '即将开始下载'
+                elif self.JCDown.status[0] == 'check':
+                    self.status[0] = 'Check Input!'
+                    # print('checkcheck')
+                    # if self.status[0] == 'Input Check!':
+                elif self.JCDown.status[0] == '':
+                    self.status[0] = ''
                 self.statusBar.SetStatusText(self.status[0])
                 self.statusBar.SetStatusText(self.status[1], 1)
                 self.statusBar.SetStatusText(self.status[2], 2)
                 self.statusBar.SetStatusText(self.status[3], 3)
                 self.statusBar.SetStatusText(self.status[4], 4)
-            elif self.JCDown.status[0] == 'Done':
-                self.download_button.Enable(True)
-                self.statusBar.SetStatusText('Done')
-                self.stop_button.Enable(False)
-                for i in range(1, 5):
-                    self.statusBar.SetStatusText('', i)
-            elif self.JCDown.status[0] == 'Error':
-                self.download_button.Enable(True)
-                self.statusBar.SetStatusText('Error')
-                self.stop_button.Enable(False)
-                for i in range(1, 5):
-                    self.statusBar.SetStatusText('', i)
-            elif self.JCDown.status[0] == 'wait':
-                self.statusBar.SetStatusText('即将开始下载')
-            else:
-                self.SetStatusText('')
+        except:
+            pass
 
     def statusBar_thread(self):
         statusBar_thread = threading.Thread(

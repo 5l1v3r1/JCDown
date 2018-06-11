@@ -45,11 +45,11 @@ class baseMainWindow ( wx.Frame ):
 		
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_notebook2 = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_notebook2.SetForegroundColour( wx.Colour( 255, 255, 255 ) )
-		self.m_notebook2.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
+		self.notebook = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.notebook.SetForegroundColour( wx.Colour( 255, 255, 255 ) )
+		self.notebook.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		
-		self.video_panel = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.video_panel = wx.Panel( self.notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer101 = wx.BoxSizer( wx.VERTICAL )
 		
 		fgSizer6 = wx.FlexGridSizer( 0, 1, 0, 0 )
@@ -90,37 +90,37 @@ class baseMainWindow ( wx.Frame ):
 		self.video_panel.SetSizer( bSizer101 )
 		self.video_panel.Layout()
 		bSizer101.Fit( self.video_panel )
-		self.m_notebook2.AddPage( self.video_panel, u"视频", False )
-		self.forum_image_panel = wx.Panel( self.m_notebook2, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.forum_image_panel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		self.notebook.AddPage( self.video_panel, u"视频", False )
+		self.image_panel = wx.Panel( self.notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.image_panel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		bSizer10 = wx.BoxSizer( wx.VERTICAL )
 		
 		bSizer4 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.urls_lable_staticText = wx.StaticText( self.forum_image_panel, wx.ID_ANY, u"页面网址(一行一条)：", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
+		self.urls_lable_staticText = wx.StaticText( self.image_panel, wx.ID_ANY, u"页面网址(一行一条)：", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
 		self.urls_lable_staticText.Wrap( -1 )
 		bSizer4.Add( self.urls_lable_staticText, 0, wx.LEFT, 22 )
 		
 		
 		bSizer4.Add( ( 0, 0), 0, wx.BOTTOM|wx.TOP, 2 )
 		
-		self.image_urls_textCtrl = wx.TextCtrl( self.forum_image_panel, wx.ID_ANY, wx.EmptyString, wx.Point( -1,-1 ), wx.Size( 520,188 ), wx.TE_MULTILINE )
+		self.image_urls_textCtrl = wx.TextCtrl( self.image_panel, wx.ID_ANY, wx.EmptyString, wx.Point( -1,-1 ), wx.Size( 520,188 ), wx.TE_MULTILINE )
 		bSizer4.Add( self.image_urls_textCtrl, 1, wx.LEFT|wx.RIGHT, 25 )
 		
 		
 		bSizer10.Add( bSizer4, 1, wx.EXPAND, 5 )
 		
-		self.m_staticline1 = wx.StaticLine( self.forum_image_panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		self.m_staticline1 = wx.StaticLine( self.image_panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer10.Add( self.m_staticline1, 0, wx.EXPAND|wx.TOP, 10 )
 		
 		
-		self.forum_image_panel.SetSizer( bSizer10 )
-		self.forum_image_panel.Layout()
-		bSizer10.Fit( self.forum_image_panel )
-		self.m_notebook2.AddPage( self.forum_image_panel, u"图片", False )
+		self.image_panel.SetSizer( bSizer10 )
+		self.image_panel.Layout()
+		bSizer10.Fit( self.image_panel )
+		self.notebook.AddPage( self.image_panel, u"图片", False )
 		
-		bSizer1.Add( self.m_notebook2, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer1.Add( self.notebook, 1, wx.EXPAND |wx.ALL, 5 )
 		
 		bSizer9 = wx.BoxSizer( wx.VERTICAL )
 		

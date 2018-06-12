@@ -31,7 +31,7 @@ class MyLogger(object):
 
     def error(self, msg):
         pass
-        # print(msg)
+        print(msg)
 
 
 class JYoutube(object):
@@ -55,8 +55,6 @@ class JYoutube(object):
     def my_hook(self, d):
         if d['status'] == 'downloading':
             if d['speed']:
-                # print(d['status'] + d['filename'] + '\t speed: ' +
-                # str(round(d['speed'] / 1024, 2)))
                 self.status[0] = 'Downloading'
                 self.status[1] = str(round(d['speed'] / 1024, 2)) + ' kB/s'
                 if d['eta']:
@@ -70,7 +68,6 @@ class JYoutube(object):
             print('Done downloading...')
             self.status[0] = 'Done'
         elif d['status'] == 'error':
-            print('Error')
             self.status[0] = 'Error'
 
     def set_proxy(self, proxy):
@@ -111,21 +108,31 @@ class JYoutube(object):
                 if self.status[0] == 'check':
                     for i in range(5):
                         self.status[i] = ''
-            elif self.status[0] == 'Error':
-                sleep(3)
-                if self.status[0] == 'Error':
-                    for i in range(5):
+            if self.status[0] == 'Error':
+                if self.status[4] == 'pause':
+                    for i in range(1, 5):
                         self.status[i] = ''
-            elif self.status[0] == 'Done':
+                    self.status[0] = 'pause'
+                else:
+                    sleep(3)
+                    if self.status[0] == 'Error':
+                        for i in range(5):
+                            self.status[i] = ''
+            if self.status[0] == 'Done':
                 sleep(3)
                 if self.status[0] == 'Done':
                     for i in range(5):
                         self.status[i] = ''
-            sleep(0.1)
-
+            if self.status[0] == 'pause':
+                sleep(3)
+                if self.status[0] == 'pause':
+                    for i in range(5):
+                        self.status[i] = ''
+            sleep(0.01)
 
     def status_monitor(self):
-        self.st_thread = threading.Thread(target=self.status_thread, daemon=True)
+        self.st_thread = threading.Thread(
+            target=self.status_thread, daemon=True)
         self.st_thread.start()
 
     def download_thread(self):
@@ -136,13 +143,13 @@ class JYoutube(object):
             self.status[0] = 'Error'
 
     def download(self):
-        self.dl_thread = threading.Thread(target=self.download_thread, daemon=True)
+        self.dl_thread = threading.Thread(
+            target=self.download_thread, daemon=True)
         self.dl_thread.start()
 
     def stop(self):
         self.terminate_thread(self.dl_thread)
-        for i in range(1, 5):
-            self.status[i] = ''
+        self.status[4] = 'pause'
 
     def terminate_thread(self, thread):
         # 由于youtube_dl一旦运行无法停止，所以停止下载的话只能强制停止该线程
@@ -156,6 +163,7 @@ class JYoutube(object):
         elif res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
             raise SystemError("PyThreadState_SetAsyncExc failed")
+
 
 def main():
     url = 'https://www.youtube.com/watch?v=9t2Egzzw21A'

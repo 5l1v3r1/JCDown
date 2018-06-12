@@ -121,6 +121,7 @@ class JYoutube(object):
                 if self.status[0] == 'Done':
                     for i in range(5):
                         self.status[i] = ''
+            sleep(0.1)
 
 
     def status_monitor(self):

@@ -145,6 +145,7 @@ class MainWindow(basewin.baseMainWindow):
                 self.statusBar.SetStatusText(self.status[2], 2)
                 self.statusBar.SetStatusText(self.status[3], 3)
                 self.statusBar.SetStatusText(self.status[4], 4)
+                sleep(0.1)
         except:
             pass
 

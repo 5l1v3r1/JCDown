@@ -35,7 +35,6 @@ class MainWindow(basewin.baseMainWindow):
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
         self.statusBar_thread()
-        self.stop_button.Enable(False)
 
     def baseMainWindowOnClose(self, event):
         self.Destroy()
@@ -114,7 +113,6 @@ class MainWindow(basewin.baseMainWindow):
             self.set_proxy()
             self.JCDown.status[0] = 'wait'
             self.JCDown.download()
-            self.download_button.Enable(False)
 
     def stop_buttonOnButtonClick(self, event):
         self.JCDown.stop()
@@ -125,27 +123,45 @@ class MainWindow(basewin.baseMainWindow):
                 if self.JCDown.status[0] == 'Downloading':
                     self.download_button.Enable(False)
                     self.stop_button.Enable(True)
-                    self.status = self.JCDown.status
+                    self.status[0] = '下载中 -->'
+                    self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'Done':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
-                    self.status = self.JCDown.status
+                    self.status[0] = '完成'
+                    self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'Error':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
-                    self.status = self.JCDown.status
+                    self.status[0] = '错误!'
+                    self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'wait':
+                    self.download_button.Enable(False)
+                    self.stop_button.Enable(False)
                     self.status[0] = '即将开始下载'
+                    self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'check':
-                    self.status[0] = 'Check Input!'
+                    self.download_button.Enable(True)
+                    self.stop_button.Enable(False)
+                    self.status[0] = '检查输入!'
+                    self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == '':
+                    self.download_button.Enable(True)
+                    self.stop_button.Enable(False)
                     self.status[0] = ''
+                    self.status[1:] = self.JCDown.status[1:]
+                elif self.JCDown.status[0] == 'pause':
+                    self.download_button.Enable(True)
+                    self.stop_button.Enable(False)
+                    self.status[0] = '已暂停!'
+                    self.status[1:] = self.JCDown.status[1:]
                 self.statusBar.SetStatusText(self.status[0])
                 self.statusBar.SetStatusText(self.status[1], 1)
                 self.statusBar.SetStatusText(self.status[2], 2)
                 self.statusBar.SetStatusText(self.status[3], 3)
                 self.statusBar.SetStatusText(self.status[4], 4)
                 sleep(0.1)
+                print(str(self.JCDown.status) + '\t' + str(self.status))
         except:
             pass
 
@@ -170,12 +186,10 @@ class MainWindow(basewin.baseMainWindow):
     def about_menuItemOnMenuSelection(self, event):
         # 关于本程序
         about_program = '''本程序用来下载视频及图片
-* 视频支持国内外主流的网站
-* 图片目前支持的网站：
-    1. bbs.fengniao.com
-    2. tieba.baidu.com
+    * 视频支持国内外主流的网站
+    * 图片目前支持的网站：
 
-后续会新增更多网站
+更多网站支持中~
 由于网站调整导致不能下载可以联系我
 Email: xxmm@live.cn
 Created by Jase Chen'''

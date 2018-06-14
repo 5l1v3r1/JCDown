@@ -34,7 +34,7 @@ class MainWindow(basewin.baseMainWindow):
         self.localDir = ''
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
-        self.statusBar_thread()
+        self.status_thread()
 
     def baseMainWindowOnClose(self, event):
         self.Destroy()
@@ -94,81 +94,98 @@ class MainWindow(basewin.baseMainWindow):
         return self.image_save_individual_checkBox.GetValue()
 
     def fetch_buttonOnButtonClick(self, event):
-        pass
+        if not self.video_url_textCtrl.GetValue():
+            self.JCDown.status[0] = 'Check'
+            print('Input Check...')
+        else:
+            self.url = self.video_url_textCtrl.GetValue()
+            self.JCDown.set_url(self.url)
+            self.set_proxy()
+            self.JCDown.status[0] = 'Fetch_Wait'
+            self.JCDown.fetch()
 
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
         ) or not self.save_local_dirPicker.Path:
-            self.JCDown.status[0] = 'check'
-            print(self.JCDown.status)
-            print('No URL or Path...')
+            self.JCDown.status[0] = 'Check'
+            print('Input Check...')
         else:
-            print(self.notebook.GetSelection())
+            print('Notebook Selected: ' + str(self.notebook.GetSelection()))
             self.url = self.video_url_textCtrl.GetValue()
             self.localDir = self.save_local_dirPicker.Path
-            print(self.url)
-            print(self.localDir)
             self.JCDown.set_url(self.url)
             self.JCDown.set_localDir(self.localDir)
             self.set_proxy()
-            self.JCDown.status[0] = 'wait'
+            self.JCDown.status[0] = 'Download_Wait'
             self.JCDown.download()
 
     def stop_buttonOnButtonClick(self, event):
         self.JCDown.stop()
 
-    def setStatusbar(self):
+    def setStatus(self):
         try:
             while True:
                 if self.JCDown.status[0] == 'Downloading':
                     self.download_button.Enable(False)
                     self.stop_button.Enable(True)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '下载中 -->'
                     self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'Done':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '完成'
                     self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'Error':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '错误!'
                     self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'wait':
+                elif self.JCDown.status[0] == 'Download_Wait':
                     self.download_button.Enable(False)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '即将开始下载'
                     self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'check':
+                elif self.JCDown.status[0] == 'Check':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '检查输入!'
                     self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == '':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = ''
                     self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'pause':
+                elif self.JCDown.status[0] == 'Pause':
                     self.download_button.Enable(True)
                     self.stop_button.Enable(False)
+                    self.fetch_button.Enable(True)
                     self.status[0] = '已暂停!'
                     self.status[1:] = self.JCDown.status[1:]
+                elif self.JCDown.status[0] == 'Fetch_Wait':
+                    self.fetch_button.Enable(False)
+                    self.status[0] = '获取列表中~'
+                elif self.JCDown.status[0] == 'Fetch_Error':
+                    self.fetch_button.Enable(True)
+                    self.status[0] = '获取列表失败！'
                 self.statusBar.SetStatusText(self.status[0])
                 self.statusBar.SetStatusText(self.status[1], 1)
                 self.statusBar.SetStatusText(self.status[2], 2)
                 self.statusBar.SetStatusText(self.status[3], 3)
                 self.statusBar.SetStatusText(self.status[4], 4)
                 sleep(0.1)
-                print(str(self.JCDown.status) + '\t' + str(self.status))
         except:
             pass
 
-    def statusBar_thread(self):
-        statusBar_thread = threading.Thread(
-            target=self.setStatusbar, daemon=True)
-        statusBar_thread.start()
+    def status_thread(self):
+        status_thread = threading.Thread(
+            target=self.setStatus, daemon=True)
+        status_thread.start()
 
     def get_large_image_links(self):
         pass

@@ -19,6 +19,8 @@ import youtube_dl
 import os
 import threading
 import ctypes
+import copy
+from copy import deepcopy
 from time import sleep
 
 
@@ -47,7 +49,7 @@ class JYoutube(object):
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
             'nocheckcertificate': True,
-            'socket_timeout': 10
+            'socket_timeout': 10,
         }
         self.status = 5 * ['']
         self.status_monitor()
@@ -101,18 +103,18 @@ class JYoutube(object):
         else:
             os.chdir(path)
 
-    def status_thread(self):
+    def status_monitor_thread(self):
         while True:
-            if self.status[0] == 'check':
+            if self.status[0] == 'Check':
                 sleep(3)
-                if self.status[0] == 'check':
+                if self.status[0] == 'Check':
                     for i in range(5):
                         self.status[i] = ''
             if self.status[0] == 'Error':
-                if self.status[4] == 'pause':
+                if self.status[4] == 'Pause':
                     for i in range(1, 5):
                         self.status[i] = ''
-                    self.status[0] = 'pause'
+                    self.status[0] = 'Pause'
                 else:
                     sleep(3)
                     if self.status[0] == 'Error':
@@ -123,16 +125,21 @@ class JYoutube(object):
                 if self.status[0] == 'Done':
                     for i in range(5):
                         self.status[i] = ''
-            if self.status[0] == 'pause':
+            if self.status[0] == 'Pause':
                 sleep(3)
-                if self.status[0] == 'pause':
+                if self.status[0] == 'Pause':
+                    for i in range(5):
+                        self.status[i] = ''
+            if self.status[0] == 'Fetch_Error':
+                sleep(3)
+                if self.status[0] == 'Fetch_Error':
                     for i in range(5):
                         self.status[i] = ''
             sleep(0.01)
 
     def status_monitor(self):
         self.st_thread = threading.Thread(
-            target=self.status_thread, daemon=True)
+            target=self.status_monitor_thread, daemon=True)
         self.st_thread.start()
 
     def download_thread(self):
@@ -147,9 +154,34 @@ class JYoutube(object):
             target=self.download_thread, daemon=True)
         self.dl_thread.start()
 
+    def fetch_thread(self):
+        try:
+            _ydl_opts_ = {}
+            _ydl_opts_ = self._ydl_opts.copy()
+            # _ydl_opts_['simulate'] = True
+            _ydl_opts_['dump_single_json'] = True
+            _ydl_opts_['skip_download'] = True
+            _ydl_opts_['listformats'] = True
+            _ydl_opts_['forcejson'] = True
+            _ydl_opts_['writeautomaticsub'] = '~/subtitles.txt'
+            with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
+                print('开始获取中')
+                ydl_.download([self._url])
+                print(ydl_)
+                sleep(1)
+                self.status[0] = 'Done'
+                print('Fetch done.')
+        except:
+            self.status[0] = 'Fetch_Error'
+
+    def fetch(self):
+        self.ft_thread = threading.Thread(
+            target=self.fetch_thread, daemon=True)
+        self.ft_thread.start()
+
     def stop(self):
         self.terminate_thread(self.dl_thread)
-        self.status[4] = 'pause'
+        self.status[4] = 'Pause'
 
     def terminate_thread(self, thread):
         # 由于youtube_dl一旦运行无法停止，所以停止下载的话只能强制停止该线程

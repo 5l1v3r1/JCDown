@@ -52,6 +52,7 @@ class JYoutube(object):
             'socket_timeout': 10,
         }
         self.status = 5 * ['']
+        self.stream_list = ['']
         self.status_monitor()
 
     def my_hook(self, d):
@@ -159,16 +160,29 @@ class JYoutube(object):
             _ydl_opts_ = {}
             _ydl_opts_ = self._ydl_opts.copy()
             # _ydl_opts_['simulate'] = True
-            _ydl_opts_['dump_single_json'] = True
-            _ydl_opts_['skip_download'] = True
-            _ydl_opts_['listformats'] = True
-            _ydl_opts_['forcejson'] = True
-            _ydl_opts_['writeautomaticsub'] = '~/subtitles.txt'
+            # _ydl_opts_['dump_single_json'] = True
+            # _ydl_opts_['skip_download'] = True
+            # _ydl_opts_['listformats'] = True
+            # _ydl_opts_['forcejson'] = True
+            _ydl_info_file = '/Users/chenomg/subtitles.txt'
+            _ydl_keys_file = '/Users/chenomg/info_keys.txt'
+            output_keys = ['title', 'ext', 'formats']
             with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
                 print('开始获取中')
-                ydl_.download([self._url])
-                print(ydl_)
-                sleep(1)
+                info_dict = ydl_.extract_info(self._url, download=False)
+                print(type(info_dict))
+                with open(_ydl_keys_file, 'w') as f:
+                    for key in info_dict:
+                        f.write(key + '\n')
+                with open(_ydl_info_file, 'w') as f:
+                    for out_key in output_keys:
+                        f.write(out_key + ' : ' + str(info_dict[out_key]) +
+                                '\n')
+                self.stream_list[0] = info_dict['title']
+                self.stream_list.append(
+                    str(info_dict['ext']) + ' - ' + str(info_dict['format']))
+                # print(self.stream_list)
+                # sleep(1)
                 self.status[0] = 'Done'
                 print('Fetch done.')
         except:

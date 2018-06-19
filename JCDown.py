@@ -103,6 +103,7 @@ class MainWindow(basewin.baseMainWindow):
             self.set_proxy()
             self.JCDown.status[0] = 'Fetch_Wait'
             self.JCDown.fetch()
+            self.show_stream_list_thread()
 
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
@@ -183,9 +184,20 @@ class MainWindow(basewin.baseMainWindow):
             pass
 
     def status_thread(self):
-        status_thread = threading.Thread(
-            target=self.setStatus, daemon=True)
+        status_thread = threading.Thread(target=self.setStatus, daemon=True)
         status_thread.start()
+
+    def show_stream_list(self):
+        self.JCDown.ft_thread.join()
+        # print(self.JCDown.stream_list)
+        for item in self.JCDown.stream_list:
+            print(item)
+            self.Stream_listBox.Append(item)
+
+    def show_stream_list_thread(self):
+        show_stream_list_thread = threading.Thread(
+            target=self.show_stream_list, daemon=True)
+        show_stream_list_thread.start()
 
     def get_large_image_links(self):
         pass

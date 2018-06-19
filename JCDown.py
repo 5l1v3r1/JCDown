@@ -188,6 +188,7 @@ class MainWindow(basewin.baseMainWindow):
         status_thread.start()
 
     def show_stream_list(self):
+        self.Stream_listBox.Clear()
         self.JCDown.ft_thread.join()
         # print(self.JCDown.stream_list)
         for item in self.JCDown.stream_list:

@@ -159,18 +159,14 @@ class JYoutube(object):
         try:
             _ydl_opts_ = {}
             _ydl_opts_ = self._ydl_opts.copy()
-            # _ydl_opts_['simulate'] = True
-            # _ydl_opts_['dump_single_json'] = True
-            # _ydl_opts_['skip_download'] = True
-            # _ydl_opts_['listformats'] = True
-            # _ydl_opts_['forcejson'] = True
-            _ydl_info_file = '/Users/chenomg/subtitles.txt'
-            _ydl_keys_file = '/Users/chenomg/info_keys.txt'
+            # 暂时保存，后续删除
+            _ydl_info_file = os.path.join(os.getcwd(), '_subtitles.txt')
+            _ydl_keys_file = os.path.join(os.getcwd(), '_info_keys.txt')
             output_keys = ['title', 'ext', 'formats']
+            self.stream_list = ['']
             with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
                 print('开始获取中')
                 info_dict = ydl_.extract_info(self._url, download=False)
-                print(type(info_dict))
                 with open(_ydl_keys_file, 'w') as f:
                     for key in info_dict:
                         f.write(key + '\n')
@@ -181,8 +177,6 @@ class JYoutube(object):
                 self.stream_list[0] = info_dict['title']
                 self.stream_list.append(
                     str(info_dict['ext']) + ' - ' + str(info_dict['format']))
-                # print(self.stream_list)
-                # sleep(1)
                 self.status[0] = 'Done'
                 print('Fetch done.')
         except:

@@ -191,9 +191,15 @@ class MainWindow(basewin.baseMainWindow):
         self.Stream_listBox.Clear()
         self.JCDown.ft_thread.join()
         # print(self.JCDown.stream_list)
-        for item in self.JCDown.stream_list:
-            print(item)
-            self.Stream_listBox.Append(item)
+        try:
+            self.Stream_listBox.Append(self.JCDown.stream_list[1])
+            for item in self.JCDown.stream_list[2:]:
+                print(item)
+                self.Stream_listBox.InsertItems([item], 0)
+            self.Stream_listBox.InsertItems([self.JCDown.stream_list[0]], 0)
+            self.Stream_listBox.SetSelection(1)
+        except:
+            pass
 
     def show_stream_list_thread(self):
         show_stream_list_thread = threading.Thread(

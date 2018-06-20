@@ -77,7 +77,7 @@ class baseMainWindow ( wx.Frame ):
 		gSizer3 = wx.GridSizer( 0, 2, 0, 0 )
 		
 		Stream_listBoxChoices = []
-		self.Stream_listBox = wx.ListBox( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), Stream_listBoxChoices, 0 )
+		self.Stream_listBox = wx.ListBox( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), Stream_listBoxChoices, wx.LB_HSCROLL )
 		gSizer3.Add( self.Stream_listBox, 0, wx.ALL, 5 )
 		
 		
@@ -93,6 +93,8 @@ class baseMainWindow ( wx.Frame ):
 		self.notebook.AddPage( self.video_panel, u"视频", False )
 		self.image_panel = wx.Panel( self.notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.image_panel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		self.image_panel.Enable( False )
+		self.image_panel.Hide()
 		
 		bSizer10 = wx.BoxSizer( wx.VERTICAL )
 		
@@ -110,9 +112,6 @@ class baseMainWindow ( wx.Frame ):
 		
 		
 		bSizer10.Add( bSizer4, 1, wx.EXPAND, 5 )
-		
-		self.m_staticline1 = wx.StaticLine( self.image_panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer10.Add( self.m_staticline1, 0, wx.EXPAND|wx.TOP, 10 )
 		
 		
 		self.image_panel.SetSizer( bSizer10 )

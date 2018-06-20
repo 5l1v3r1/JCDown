@@ -175,8 +175,11 @@ class JYoutube(object):
                         f.write(out_key + ' : ' + str(info_dict[out_key]) +
                                 '\n')
                 self.stream_list[0] = info_dict['title']
-                self.stream_list.append(
-                    str(info_dict['ext']) + ' - ' + str(info_dict['format']))
+                # self.stream_list.append(
+                    # str(info_dict['ext']) + ' - ' + str(info_dict['format']))
+                for item in info_dict['formats']:
+                    self.stream_list.append(
+                        str(item['ext']) + ' - ' + str(item['format']))
                 self.status[0] = 'Done'
                 print('Fetch done.')
         except:

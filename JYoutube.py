@@ -81,6 +81,9 @@ class JYoutube(object):
             if 'proxy' in self._ydl_opts:
                 self._ydl_opts.pop('proxy')
 
+    def set_format(self, format_id):
+        self._ydl_opts['format'] = format_id
+
     def set_url(self, url):
         self._url = url
 
@@ -136,6 +139,11 @@ class JYoutube(object):
                 if self.status[0] == 'Fetch_Error':
                     for i in range(5):
                         self.status[i] = ''
+            if self.status[0] == 'Fetch_Done':
+                sleep(3)
+                if self.status[0] == 'Fetch_Done':
+                    for i in range(5):
+                        self.status[i] = ''
             sleep(0.01)
 
     def status_monitor(self):
@@ -164,6 +172,7 @@ class JYoutube(object):
             _ydl_keys_file = os.path.join(os.getcwd(), '_info_keys.txt')
             output_keys = ['title', 'ext', 'formats']
             self.stream_list = ['']
+            self.stream_format_list = ['']
             with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
                 print('开始获取中')
                 info_dict = ydl_.extract_info(self._url, download=False)
@@ -180,7 +189,8 @@ class JYoutube(object):
                 for item in info_dict['formats']:
                     self.stream_list.append(
                         str(item['ext']) + ' - ' + str(item['format']))
-                self.status[0] = 'Done'
+                    self.stream_format_list.append(str(item['format_id']))
+                self.status[0] = 'Fetch_Done'
                 print('Fetch done.')
         except:
             self.status[0] = 'Fetch_Error'

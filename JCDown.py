@@ -83,6 +83,19 @@ class MainWindow(basewin.baseMainWindow):
         local = self.image_local_location()
         print(self.is_individual())
 
+    def set_format(self):
+        try:
+            format_id_index = self.select_stream_index()
+            print(self.stream_formatID_list)
+            format_id = self.stream_formatID_list[format_id_index]
+            print('Download: ' + format_id)
+            if format_id:
+                self.JCDown.set_format(format_id)
+            else:
+                self.JCDown.set_format('best')
+        except:
+            print('已选择默认格式：best')
+
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():
             proxy = self.proxy_textCtrl.GetValue()
@@ -111,12 +124,12 @@ class MainWindow(basewin.baseMainWindow):
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
-            print('Notebook Selected: ' + str(self.notebook.GetSelection()))
             self.url = self.video_url_textCtrl.GetValue()
             self.localDir = self.save_local_dirPicker.Path
             self.JCDown.set_url(self.url)
             self.JCDown.set_localDir(self.localDir)
             self.set_proxy()
+            self.set_format()
             self.JCDown.status[0] = 'Download_Wait'
             self.JCDown.download()
 
@@ -129,7 +142,6 @@ class MainWindow(basewin.baseMainWindow):
                 if self.JCDown.status[0] == 'Downloading':
                     self.download_button.Enable(False)
                     self.stop_button.Enable(True)
-                    self.fetch_button.Enable(True)
                     self.status[0] = '下载中 -->'
                     self.status[1:] = self.JCDown.status[1:]
                 elif self.JCDown.status[0] == 'Done':
@@ -174,6 +186,9 @@ class MainWindow(basewin.baseMainWindow):
                 elif self.JCDown.status[0] == 'Fetch_Error':
                     self.fetch_button.Enable(True)
                     self.status[0] = '获取列表失败！'
+                elif self.JCDown.status[0] == 'Fetch_Done':
+                    self.fetch_button.Enable(True)
+                    self.status[0] = '获取列表成功！'
                 self.statusBar.SetStatusText(self.status[0])
                 self.statusBar.SetStatusText(self.status[1], 1)
                 self.statusBar.SetStatusText(self.status[2], 2)
@@ -190,21 +205,32 @@ class MainWindow(basewin.baseMainWindow):
     def show_stream_list(self):
         self.Stream_listBox.Clear()
         self.JCDown.ft_thread.join()
+        self.stream_formatID_list = ['']
         # print(self.JCDown.stream_list)
         try:
             self.Stream_listBox.Append(self.JCDown.stream_list[1])
             for item in self.JCDown.stream_list[2:]:
-                print(item)
                 self.Stream_listBox.InsertItems([item], 0)
+            for item_id in self.JCDown.stream_format_list[:0:-1]:
+                self.stream_formatID_list.append(item_id)
             self.Stream_listBox.InsertItems([self.JCDown.stream_list[0]], 0)
+            self.stream_formatID_list[0] = 'best'
             self.Stream_listBox.SetSelection(1)
         except:
-            pass
+            print('Error in: show_stream_list')
 
     def show_stream_list_thread(self):
         show_stream_list_thread = threading.Thread(
             target=self.show_stream_list, daemon=True)
         show_stream_list_thread.start()
+
+    def select_stream_index(self):
+        format_ID = self.Stream_listBox.GetSelection()
+        return int(format_ID)
+
+    def Stream_listBoxOnListBox(self, event):
+        format_ID = self.Stream_listBox.GetSelection()
+        print('you select: ' + str(format_ID))
 
     def get_large_image_links(self):
         pass

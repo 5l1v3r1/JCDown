@@ -180,6 +180,7 @@ class baseMainWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.rule_menuItemOnMenuSelection, id = self.rule_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
 		self.fetch_button.Bind( wx.EVT_BUTTON, self.fetch_buttonOnButtonClick )
+		self.Stream_listBox.Bind( wx.EVT_LISTBOX, self.Stream_listBoxOnListBox )
 		self.stop_button.Bind( wx.EVT_BUTTON, self.stop_buttonOnButtonClick )
 		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
 	
@@ -201,6 +202,9 @@ class baseMainWindow ( wx.Frame ):
 		event.Skip()
 	
 	def fetch_buttonOnButtonClick( self, event ):
+		event.Skip()
+	
+	def Stream_listBoxOnListBox( self, event ):
 		event.Skip()
 	
 	def stop_buttonOnButtonClick( self, event ):

@@ -83,7 +83,7 @@ class baseMainWindow ( wx.Frame ):
 		
 		gbSizer31.Add( self.merge_VideoAndSound_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 15 )
 		
-		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_ICON|wx.LC_REPORT )
+		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_REPORT )
 		gbSizer31.Add( self.Stream_listCtrl, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 		
 		Stream_listBoxChoices = []
@@ -101,33 +101,6 @@ class baseMainWindow ( wx.Frame ):
 		self.video_panel.Layout()
 		bSizer101.Fit( self.video_panel )
 		self.notebook.AddPage( self.video_panel, u"视频", False )
-		self.image_panel = wx.Panel( self.notebook, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.image_panel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
-		self.image_panel.Enable( False )
-		self.image_panel.Hide()
-		
-		bSizer10 = wx.BoxSizer( wx.VERTICAL )
-		
-		bSizer4 = wx.BoxSizer( wx.VERTICAL )
-		
-		self.urls_lable_staticText = wx.StaticText( self.image_panel, wx.ID_ANY, u"页面网址(一行一条)：", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
-		self.urls_lable_staticText.Wrap( -1 )
-		bSizer4.Add( self.urls_lable_staticText, 0, wx.LEFT, 22 )
-		
-		
-		bSizer4.Add( ( 0, 0), 0, wx.BOTTOM|wx.TOP, 2 )
-		
-		self.image_urls_textCtrl = wx.TextCtrl( self.image_panel, wx.ID_ANY, wx.EmptyString, wx.Point( -1,-1 ), wx.Size( 520,188 ), wx.TE_MULTILINE )
-		bSizer4.Add( self.image_urls_textCtrl, 1, wx.LEFT|wx.RIGHT, 25 )
-		
-		
-		bSizer10.Add( bSizer4, 1, wx.EXPAND, 5 )
-		
-		
-		self.image_panel.SetSizer( bSizer10 )
-		self.image_panel.Layout()
-		bSizer10.Fit( self.image_panel )
-		self.notebook.AddPage( self.image_panel, u"图片", False )
 		
 		bSizer1.Add( self.notebook, 1, wx.EXPAND |wx.ALL, 5 )
 		

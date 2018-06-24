@@ -35,6 +35,12 @@ class MainWindow(basewin.baseMainWindow):
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
         self.status_thread()
+        self.Stream_listCtrl.InsertColumn(0, 'Format')
+        self.Stream_listCtrl.InsertColumn(1, 'Description')
+        self.Stream_listCtrl.InsertItem(0, 'Hello')
+        self.Stream_listCtrl.InsertItem(0, 'World!')
+        # self.Stream_listCtrl.SetItem(0, 0, 'hello')
+        # self.Stream_listCtrl.SetItem(0, 1, 'world!')
 
     def baseMainWindowOnClose(self, event):
         self.Destroy()
@@ -229,8 +235,14 @@ class MainWindow(basewin.baseMainWindow):
         return int(format_ID)
 
     def Stream_listBoxOnListBox(self, event):
-        format_ID = self.Stream_listBox.GetSelection()
+        format_ID = self.Stream_listBox.GetSelections()
         print('you select: ' + str(format_ID))
+
+    def need_merge(self):
+        if self.merge_VideoAndSound_checkBox.GetValue():
+            return True
+        else:
+            return False
 
     def get_large_image_links(self):
         pass
@@ -247,12 +259,10 @@ class MainWindow(basewin.baseMainWindow):
 
     def about_menuItemOnMenuSelection(self, event):
         # 关于本程序
-        about_program = '''本程序用来下载视频及图片
-    * 视频支持国内外主流的网站
-    * 图片目前支持的网站：
+        about_program = '''本程序用来下载：
+    *YouTube以及其他国内外主流视频网站的视频
 
-更多网站支持中~
-由于网站调整导致不能下载可以联系我
+本程序基于youtube_dl开发
 Email: xxmm@live.cn
 Created by Jase Chen'''
         wx.MessageBox(about_program, 'About', wx.OK | wx.ICON_INFORMATION)

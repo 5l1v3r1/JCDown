@@ -41,8 +41,9 @@ class JYoutube(object):
         self._running_flag = True
         self._ydl_opts = {
             'format': 'best',
+            # 'format': 'best',
             # 'postprocessors': [{
-            # 'key': 'FFmpegExtractAudio',
+            # 'key': 'FFmpegMergerPP',
             # 'preferredcodec': 'mp3',
             # 'preferredquality': '192',
             # }],
@@ -222,7 +223,7 @@ def main():
     url = 'https://www.youtube.com/watch?v=9t2Egzzw21A'
     mydown = JYoutube()
     mydown.set_url(url)
-    mydown.set_localDir('/Users/chenomg/aaa/aaaaa')
+    # mydown.set_localDir('/Users/chenomg/aaa/aaaaa')
     print(mydown._ydl_opts)
     mydown.download()
 

@@ -74,14 +74,24 @@ class baseMainWindow ( wx.Frame ):
 		
 		fgSizer6.Add( gSizer1, 1, wx.EXPAND, 5 )
 		
-		gSizer3 = wx.GridSizer( 0, 2, 0, 0 )
+		gbSizer31 = wx.GridBagSizer( 0, 0 )
+		gbSizer31.SetFlexibleDirection( wx.BOTH )
+		gbSizer31.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.merge_VideoAndSound_checkBox = wx.CheckBox( self.video_panel, wx.ID_ANY, u"合并(V+S)\n(YouTube)", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.merge_VideoAndSound_checkBox.Enable( False )
+		
+		gbSizer31.Add( self.merge_VideoAndSound_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 15 )
+		
+		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_ICON|wx.LC_REPORT )
+		gbSizer31.Add( self.Stream_listCtrl, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 		
 		Stream_listBoxChoices = []
 		self.Stream_listBox = wx.ListBox( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), Stream_listBoxChoices, wx.LB_HSCROLL )
-		gSizer3.Add( self.Stream_listBox, 0, wx.ALL, 5 )
+		gbSizer31.Add( self.Stream_listBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 		
 		
-		fgSizer6.Add( gSizer3, 1, wx.EXPAND, 5 )
+		fgSizer6.Add( gbSizer31, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer101.Add( fgSizer6, 1, wx.EXPAND, 5 )
@@ -144,6 +154,8 @@ class baseMainWindow ( wx.Frame ):
 		gbSizer3.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
 		self.save_individual_checkBox = wx.CheckBox( self, wx.ID_ANY, u"保存到对应子文件夹中", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.save_individual_checkBox.Enable( False )
+		
 		gbSizer3.Add( self.save_individual_checkBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		self.proxy_checkBox = wx.CheckBox( self, wx.ID_ANY, u"Proxy:", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -170,7 +182,7 @@ class baseMainWindow ( wx.Frame ):
 		
 		self.SetSizer( bSizer1 )
 		self.Layout()
-		self.statusBar = self.CreateStatusBar( 5, wx.STB_SIZEGRIP, wx.ID_ANY )
+		self.statusBar = self.CreateStatusBar( 5, 0, wx.ID_ANY )
 		
 		self.Centre( wx.BOTH )
 		
@@ -180,6 +192,7 @@ class baseMainWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.rule_menuItemOnMenuSelection, id = self.rule_menuItem.GetId() )
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
 		self.fetch_button.Bind( wx.EVT_BUTTON, self.fetch_buttonOnButtonClick )
+		self.merge_VideoAndSound_checkBox.Bind( wx.EVT_CHECKBOX, self.merge_VideoAndSound_checkBoxOnCheckBox )
 		self.Stream_listBox.Bind( wx.EVT_LISTBOX, self.Stream_listBoxOnListBox )
 		self.stop_button.Bind( wx.EVT_BUTTON, self.stop_buttonOnButtonClick )
 		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
@@ -202,6 +215,9 @@ class baseMainWindow ( wx.Frame ):
 		event.Skip()
 	
 	def fetch_buttonOnButtonClick( self, event ):
+		event.Skip()
+	
+	def merge_VideoAndSound_checkBoxOnCheckBox( self, event ):
 		event.Skip()
 	
 	def Stream_listBoxOnListBox( self, event ):

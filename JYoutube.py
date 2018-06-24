@@ -172,8 +172,12 @@ class JYoutube(object):
             _ydl_info_file = os.path.join(os.getcwd(), '_subtitles.txt')
             _ydl_keys_file = os.path.join(os.getcwd(), '_info_keys.txt')
             output_keys = ['title', 'ext', 'formats']
+            # 以下为listbox中使用，listCtrl完成后删除
             self.stream_list = ['']
             self.stream_format_list = ['']
+            # ListCtrl使用，记录格式信息
+            self.stream_info_dict = {}
+            stream_info_index = 0
             with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
                 print('开始获取中')
                 info_dict = ydl_.extract_info(self._url, download=False)
@@ -185,12 +189,29 @@ class JYoutube(object):
                         f.write(out_key + ' : ' + str(info_dict[out_key]) +
                                 '\n')
                 self.stream_list[0] = info_dict['title']
-                # self.stream_list.append(
-                    # str(info_dict['ext']) + ' - ' + str(info_dict['format']))
-                for item in info_dict['formats']:
-                    self.stream_list.append(
-                        str(item['ext']) + ' - ' + str(item['format']))
-                    self.stream_format_list.append(str(item['format_id']))
+                # ListCtrl使用
+                for item in info_dict['formats'][::-1]:
+                    self.stream_info_dict[stream_info_index] = {}
+                    self.stream_info_dict[stream_info_index]["ext"] = item[
+                        'ext']
+                    try:
+                        size = 'Unknown'
+                        size_K = round(item['filesize'] / 1024, 2)
+                        size_M = round(size_K / 1024, 2)
+                        size_G = round(size_M / 1024, 2)
+                        if size_G >= 1:
+                            size = str(size_G) + 'GB'
+                        elif size_M >= 1:
+                            size = str(size_M) + 'MB'
+                        else:
+                            size = str(size_K) + 'KB'
+                        self.stream_info_dict[stream_info_index][
+                            "size"] = size
+                    except:
+                        self.stream_info_dict[stream_info_index]["size"] = 'Unknown'
+                    self.stream_info_dict[stream_info_index]["format"] = item[
+                        'format']
+                    stream_info_index += 1
                 self.status[0] = 'Fetch_Done'
                 print('Fetch done.')
         except:

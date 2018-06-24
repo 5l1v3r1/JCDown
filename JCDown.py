@@ -25,6 +25,7 @@ import JYoutube
 import threading
 from time import sleep
 import re
+import copy
 
 
 class MainWindow(basewin.baseMainWindow):
@@ -35,59 +36,13 @@ class MainWindow(basewin.baseMainWindow):
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
         self.status_thread()
-        self.Stream_listCtrl.InsertColumn(0, 'Format')
-        self.Stream_listCtrl.InsertColumn(1, 'Description')
-        self.Stream_listCtrl.InsertItem(0, 'Hello')
-        self.Stream_listCtrl.InsertItem(0, 'World!')
-        # self.Stream_listCtrl.SetItem(0, 0, 'hello')
-        # self.Stream_listCtrl.SetItem(0, 1, 'world!')
+        self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
+        self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
+        self.Stream_listCtrl.InsertColumn(2, 'Size')
+        self.Stream_listCtrl.InsertColumn(3, 'Description', width=220)
 
     def baseMainWindowOnClose(self, event):
         self.Destroy()
-
-    def get_image_links(self):
-        # 图片地址
-        img_list = []
-        headers = {
-            'user-agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'
-        }
-        r = requests.get(self.url, headers=headers)
-        selector = html.fromstring(r.text)
-        for sel in selector.xpath(
-                '//div[starts-with(@class, "d_post_content j_d_post_content")]'
-        ):
-            for img in sel.xpath("img/@src"):
-                img_list.append(img)
-        return img_list
-
-    def download_img(self, img_urls, path=os.getcwd()):
-        # 首先检查是否有图片
-        if not img_urls:
-            print('Image not found!')
-        else:
-            for img in img_urls:
-                # 图片保存名字
-                file_name = re.findall(r'\/([\d\w]+\.jpg)', img)
-                if file_name:
-                    # 二进制写入图片
-                    with open(os.path.join(path, file_name[0]), 'wb') as f:
-                        f.write(requests.get(img).content)
-            print('Download done...')
-
-    def image_urls_input(self):
-        urls_list = []
-        for url in StringIO(self.image_urls_textCtrl.GetValue()).readlines():
-            urls_list.append(url)
-        return urls_list
-
-    def image_local_location(self):
-        return self.image_local_dirPicker.GetPath()
-
-    def image_download_buttonOnButtonClick(self, event):
-        urls = self.image_urls_input()
-        local = self.image_local_location()
-        print(self.is_individual())
 
     def set_format(self):
         try:
@@ -209,21 +164,26 @@ class MainWindow(basewin.baseMainWindow):
         status_thread.start()
 
     def show_stream_list(self):
-        self.Stream_listBox.Clear()
+        self.Stream_listCtrl.DeleteAllItems()
         self.JCDown.ft_thread.join()
-        self.stream_formatID_list = ['']
-        # print(self.JCDown.stream_list)
+        stream_info_dict = copy.deepcopy(self.JCDown.stream_info_dict)
+        print(stream_info_dict)
+        # ListCtrl显示设置
         try:
-            self.Stream_listBox.Append(self.JCDown.stream_list[1])
-            for item in self.JCDown.stream_list[2:]:
-                self.Stream_listBox.InsertItems([item], 0)
-            for item_id in self.JCDown.stream_format_list[:0:-1]:
-                self.stream_formatID_list.append(item_id)
-            self.Stream_listBox.InsertItems([self.JCDown.stream_list[0]], 0)
-            self.stream_formatID_list[0] = 'best'
-            self.Stream_listBox.SetSelection(1)
+            for item in stream_info_dict:
+                print(str(item) + stream_info_dict[item]['ext'])
+                print(str(item) + stream_info_dict[item]['size'])
+                print(str(item) + stream_info_dict[item]['format'])
+                self.Stream_listCtrl.InsertItem(
+                    item, str(item+1))
+                self.Stream_listCtrl.SetItem(
+                    item, 1, stream_info_dict[item]['ext'])
+                self.Stream_listCtrl.SetItem(
+                    item, 2, stream_info_dict[item]['size'])
+                self.Stream_listCtrl.SetItem(
+                    item, 3, stream_info_dict[item]['format'])
         except:
-            print('Error in: show_stream_list')
+            print('Error in: show_stream_CtrlList')
 
     def show_stream_list_thread(self):
         show_stream_list_thread = threading.Thread(

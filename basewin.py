@@ -17,9 +17,9 @@ import wx.xrc
 class baseMainWindow ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"JCDown", pos = wx.DefaultPosition, size = wx.Size( 582,450 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"JCDown", pos = wx.DefaultPosition, size = wx.Size( 582,500 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
-		self.SetSizeHints( wx.Size( 582,450 ), wx.Size( 582,450 ) )
+		self.SetSizeHints( wx.Size( 582,500 ), wx.Size( 582,500 ) )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		self.menubar = wx.MenuBar( 0 )
@@ -78,17 +78,21 @@ class baseMainWindow ( wx.Frame ):
 		gbSizer31.SetFlexibleDirection( wx.BOTH )
 		gbSizer31.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
+		self.title_staticText = wx.StaticText( self.video_panel, wx.ID_ANY, u"Title:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.title_staticText.Wrap( -1 )
+		gbSizer31.Add( self.title_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.LEFT, 5 )
+		
 		self.merge_VideoAndSound_checkBox = wx.CheckBox( self.video_panel, wx.ID_ANY, u"合并(V+S)\n(YouTube)", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.merge_VideoAndSound_checkBox.Enable( False )
 		
-		gbSizer31.Add( self.merge_VideoAndSound_checkBox, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 15 )
+		gbSizer31.Add( self.merge_VideoAndSound_checkBox, wx.GBPosition( 1, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 15 )
 		
-		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_REPORT )
-		gbSizer31.Add( self.Stream_listCtrl, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_REPORT|wx.SIMPLE_BORDER )
+		gbSizer31.Add( self.Stream_listCtrl, wx.GBPosition( 1, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 		
 		Stream_listBoxChoices = []
 		self.Stream_listBox = wx.ListBox( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), Stream_listBoxChoices, wx.LB_HSCROLL )
-		gbSizer31.Add( self.Stream_listBox, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		gbSizer31.Add( self.Stream_listBox, wx.GBPosition( 1, 3 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
 		
 		
 		fgSizer6.Add( gbSizer31, 1, wx.EXPAND, 5 )

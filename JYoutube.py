@@ -116,7 +116,7 @@ class JYoutube(object):
                     for i in range(5):
                         self.status[i] = ''
             if self.status[0] == 'Error':
-                if self.status[4] == 'Pause':
+                if self.status[4] == ' ':
                     for i in range(1, 5):
                         self.status[i] = ''
                     self.status[0] = 'Pause'
@@ -189,6 +189,7 @@ class JYoutube(object):
                         f.write(out_key + ' : ' + str(info_dict[out_key]) +
                                 '\n')
                 self.stream_list[0] = info_dict['title']
+                self.stream_info_dict['title'] = info_dict['title']
                 # ListCtrl使用
                 for item in info_dict['formats'][::-1]:
                     self.stream_info_dict[stream_info_index] = {}
@@ -205,12 +206,14 @@ class JYoutube(object):
                             size = str(size_M) + 'MB'
                         else:
                             size = str(size_K) + 'KB'
-                        self.stream_info_dict[stream_info_index][
-                            "size"] = size
+                        self.stream_info_dict[stream_info_index]["size"] = size
                     except:
-                        self.stream_info_dict[stream_info_index]["size"] = 'Unknown'
+                        self.stream_info_dict[stream_info_index][
+                            "size"] = 'Unknown'
                     self.stream_info_dict[stream_info_index]["format"] = item[
                         'format']
+                    self.stream_info_dict[stream_info_index]["format_id"] = item[
+                        'format_id']
                     stream_info_index += 1
                 self.status[0] = 'Fetch_Done'
                 print('Fetch done.')
@@ -224,7 +227,7 @@ class JYoutube(object):
 
     def stop(self):
         self.terminate_thread(self.dl_thread)
-        self.status[4] = 'Pause'
+        self.status[4] = ' '
 
     def terminate_thread(self, thread):
         # 由于youtube_dl一旦运行无法停止，所以停止下载的话只能强制停止该线程

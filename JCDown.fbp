@@ -41,11 +41,11 @@
             <property name="font"></property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
-            <property name="maximum_size">582,500</property>
-            <property name="minimum_size">582,500</property>
+            <property name="maximum_size">582,470</property>
+            <property name="minimum_size">582,470</property>
             <property name="name">baseMainWindow</property>
             <property name="pos"></property>
-            <property name="size">582,500</property>
+            <property name="size">582,470</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass">; forward_declare</property>
             <property name="title">JCDown</property>
@@ -360,16 +360,16 @@
                                 <event name="OnSetFocus"></event>
                                 <event name="OnSize"></event>
                                 <event name="OnUpdateUI"></event>
-                                <object class="wxBoxSizer" expanded="0">
+                                <object class="wxBoxSizer" expanded="1">
                                     <property name="minimum_size"></property>
                                     <property name="name">bSizer101</property>
                                     <property name="orient">wxVERTICAL</property>
                                     <property name="permission">none</property>
-                                    <object class="sizeritem" expanded="0">
+                                    <object class="sizeritem" expanded="1">
                                         <property name="border">5</property>
                                         <property name="flag">wxEXPAND</property>
                                         <property name="proportion">1</property>
-                                        <object class="wxFlexGridSizer" expanded="0">
+                                        <object class="wxFlexGridSizer" expanded="1">
                                             <property name="cols">1</property>
                                             <property name="flexible_direction">wxBOTH</property>
                                             <property name="growablecols"></property>
@@ -627,7 +627,7 @@
                                                             <property name="pos">-1,-1</property>
                                                             <property name="resize">Resizable</property>
                                                             <property name="show">1</property>
-                                                            <property name="size"></property>
+                                                            <property name="size">-1,25</property>
                                                             <property name="style"></property>
                                                             <property name="subclass">; forward_declare</property>
                                                             <property name="toolbar_pane">0</property>
@@ -667,11 +667,11 @@
                                                     </object>
                                                 </object>
                                             </object>
-                                            <object class="sizeritem" expanded="0">
+                                            <object class="sizeritem" expanded="1">
                                                 <property name="border">5</property>
                                                 <property name="flag">wxEXPAND</property>
                                                 <property name="proportion">1</property>
-                                                <object class="wxGridBagSizer" expanded="0">
+                                                <object class="wxGridBagSizer" expanded="1">
                                                     <property name="empty_cell_size"></property>
                                                     <property name="flexible_direction">wxBOTH</property>
                                                     <property name="growablecols"></property>
@@ -797,7 +797,7 @@
                                                             <property name="dock">Dock</property>
                                                             <property name="dock_fixed">0</property>
                                                             <property name="docking">Left</property>
-                                                            <property name="enabled">0</property>
+                                                            <property name="enabled">1</property>
                                                             <property name="fg"></property>
                                                             <property name="floatable">1</property>
                                                             <property name="font"></property>
@@ -950,7 +950,7 @@
                                                             <event name="OnListItemFocused"></event>
                                                             <event name="OnListItemMiddleClick"></event>
                                                             <event name="OnListItemRightClick"></event>
-                                                            <event name="OnListItemSelected"></event>
+                                                            <event name="OnListItemSelected">Stream_listCtrlOnListItemSelected</event>
                                                             <event name="OnListKeyDown"></event>
                                                             <event name="OnMiddleDClick"></event>
                                                             <event name="OnMiddleDown"></event>
@@ -1614,7 +1614,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size"></property>
+                                        <property name="size">-1,25</property>
                                         <property name="style"></property>
                                         <property name="subclass">; forward_declare</property>
                                         <property name="toolbar_pane">0</property>
@@ -1705,7 +1705,7 @@
                                         <property name="pos">-1,-1</property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">-1,-1</property>
+                                        <property name="size">-1,25</property>
                                         <property name="style"></property>
                                         <property name="subclass">; forward_declare</property>
                                         <property name="toolbar_pane">0</property>

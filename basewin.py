@@ -17,9 +17,9 @@ import wx.xrc
 class baseMainWindow ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"JCDown", pos = wx.DefaultPosition, size = wx.Size( 582,500 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"JCDown", pos = wx.DefaultPosition, size = wx.Size( 582,470 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
-		self.SetSizeHints( wx.Size( 582,500 ), wx.Size( 582,500 ) )
+		self.SetSizeHints( wx.Size( 582,470 ), wx.Size( 582,470 ) )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		self.menubar = wx.MenuBar( 0 )
@@ -68,7 +68,7 @@ class baseMainWindow ( wx.Frame ):
 		self.video_url_textCtrl = wx.TextCtrl( self.video_panel, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 430,-1 ), 0 )
 		gSizer1.Add( self.video_url_textCtrl, 0, wx.ALL, 5 )
 		
-		self.fetch_button = wx.Button( self.video_panel, wx.ID_ANY, u"获取", wx.Point( -1,-1 ), wx.DefaultSize, 0 )
+		self.fetch_button = wx.Button( self.video_panel, wx.ID_ANY, u"获取", wx.Point( -1,-1 ), wx.Size( -1,25 ), 0 )
 		gSizer1.Add( self.fetch_button, 0, wx.ALIGN_RIGHT|wx.ALIGN_TOP|wx.ALL, 5 )
 		
 		
@@ -83,8 +83,6 @@ class baseMainWindow ( wx.Frame ):
 		gbSizer31.Add( self.title_staticText, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.LEFT, 5 )
 		
 		self.merge_VideoAndSound_checkBox = wx.CheckBox( self.video_panel, wx.ID_ANY, u"合并(V+S)\n(YouTube)", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.merge_VideoAndSound_checkBox.Enable( False )
-		
 		gbSizer31.Add( self.merge_VideoAndSound_checkBox, wx.GBPosition( 1, 1 ), wx.GBSpan( 1, 1 ), wx.LEFT, 15 )
 		
 		self.Stream_listCtrl = wx.ListCtrl( self.video_panel, wx.ID_ANY, wx.DefaultPosition, wx.Size( 430,150 ), wx.LC_REPORT|wx.SIMPLE_BORDER )
@@ -144,10 +142,10 @@ class baseMainWindow ( wx.Frame ):
 		self.proxy_textCtrl = wx.TextCtrl( self, wx.ID_ANY, u"socks5://127.0.0.1:1080/", wx.Point( -1,-1 ), wx.Size( 180,-1 ), 0 )
 		gbSizer3.Add( self.proxy_textCtrl, wx.GBPosition( 0, 2 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
-		self.stop_button = wx.Button( self, wx.ID_ANY, u"暂停", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.stop_button = wx.Button( self, wx.ID_ANY, u"暂停", wx.DefaultPosition, wx.Size( -1,25 ), 0 )
 		gbSizer3.Add( self.stop_button, wx.GBPosition( 1, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 40 )
 		
-		self.download_button = wx.Button( self, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.Size( -1,-1 ), 0 )
+		self.download_button = wx.Button( self, wx.ID_ANY, u"开始下载", wx.Point( -1,-1 ), wx.Size( -1,25 ), 0 )
 		gbSizer3.Add( self.download_button, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 40 )
 		
 		
@@ -170,6 +168,7 @@ class baseMainWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.about_menuItemOnMenuSelection, id = self.about_menuItem.GetId() )
 		self.fetch_button.Bind( wx.EVT_BUTTON, self.fetch_buttonOnButtonClick )
 		self.merge_VideoAndSound_checkBox.Bind( wx.EVT_CHECKBOX, self.merge_VideoAndSound_checkBoxOnCheckBox )
+		self.Stream_listCtrl.Bind( wx.EVT_LIST_ITEM_SELECTED, self.Stream_listCtrlOnListItemSelected )
 		self.Stream_listBox.Bind( wx.EVT_LISTBOX, self.Stream_listBoxOnListBox )
 		self.stop_button.Bind( wx.EVT_BUTTON, self.stop_buttonOnButtonClick )
 		self.download_button.Bind( wx.EVT_BUTTON, self.download_buttonOnButtonClick )
@@ -195,6 +194,9 @@ class baseMainWindow ( wx.Frame ):
 		event.Skip()
 	
 	def merge_VideoAndSound_checkBoxOnCheckBox( self, event ):
+		event.Skip()
+	
+	def Stream_listCtrlOnListItemSelected( self, event ):
 		event.Skip()
 	
 	def Stream_listBoxOnListBox( self, event ):

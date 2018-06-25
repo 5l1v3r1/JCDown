@@ -16,15 +16,9 @@
 
 import wx
 import basewin
-import requests
-import re
-from lxml import html
-import os
-from io import StringIO
 import JYoutube
 import threading
 from time import sleep
-import re
 import copy
 
 
@@ -45,17 +39,14 @@ class MainWindow(basewin.baseMainWindow):
         self.Destroy()
 
     def set_format(self):
-        try:
-            format_id_index = self.select_stream_index()
-            print(self.stream_formatID_list)
-            format_id = self.stream_formatID_list[format_id_index]
+        print(self.Stream_listCtrl.GetFirstSelected())
+        if self.Stream_listCtrl.GetFirstSelected() != -1:
+            format_id_index = self.Stream_listCtrl.GetFirstSelected()
+            format_id = self.stream_info_dict[format_id_index]['format_id']
             print('Download: ' + format_id)
-            if format_id:
-                self.JCDown.set_format(format_id)
-            else:
-                self.JCDown.set_format('best')
-        except:
-            print('已选择默认格式：best')
+            self.JCDown.set_format(format_id)
+        else:
+            self.JCDown.set_format('best')
 
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():
@@ -72,6 +63,8 @@ class MainWindow(basewin.baseMainWindow):
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
+            self.Stream_listCtrl.DeleteAllItems()
+            self.title_staticText.SetLabel('Title: ')
             self.url = self.video_url_textCtrl.GetValue()
             self.JCDown.set_url(self.url)
             self.set_proxy()
@@ -97,93 +90,94 @@ class MainWindow(basewin.baseMainWindow):
     def stop_buttonOnButtonClick(self, event):
         self.JCDown.stop()
 
-    def setStatus(self):
+    def main_show_statusbar(self, status):
         try:
-            while True:
-                if self.JCDown.status[0] == 'Downloading':
-                    self.download_button.Enable(False)
-                    self.stop_button.Enable(True)
-                    self.status[0] = '下载中 -->'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Done':
-                    self.download_button.Enable(True)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '完成'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Error':
-                    self.download_button.Enable(True)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '错误!'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Download_Wait':
-                    self.download_button.Enable(False)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '即将开始下载'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Check':
-                    self.download_button.Enable(True)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '检查输入!'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == '':
-                    self.download_button.Enable(True)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = ''
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Pause':
-                    self.download_button.Enable(True)
-                    self.stop_button.Enable(False)
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '已暂停!'
-                    self.status[1:] = self.JCDown.status[1:]
-                elif self.JCDown.status[0] == 'Fetch_Wait':
-                    self.fetch_button.Enable(False)
-                    self.status[0] = '获取列表中~'
-                elif self.JCDown.status[0] == 'Fetch_Error':
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '获取列表失败！'
-                elif self.JCDown.status[0] == 'Fetch_Done':
-                    self.fetch_button.Enable(True)
-                    self.status[0] = '获取列表成功！'
-                self.statusBar.SetStatusText(self.status[0])
-                self.statusBar.SetStatusText(self.status[1], 1)
-                self.statusBar.SetStatusText(self.status[2], 2)
-                self.statusBar.SetStatusText(self.status[3], 3)
-                self.statusBar.SetStatusText(self.status[4], 4)
-                sleep(0.1)
+            if status[0] == 'Downloading':
+                self.download_button.Enable(False)
+                self.stop_button.Enable(True)
+                status[0] = '下载中 -->'
+            elif status[0] == 'Done':
+                self.download_button.Enable(True)
+                self.fetch_button.Enable(True)
+                status[0] = '完成'
+            elif status[0] == 'Error':
+                self.download_button.Enable(True)
+                self.stop_button.Enable(False)
+                self.fetch_button.Enable(True)
+                status[0] = '错误!'
+            elif status[0] == 'Download_Wait':
+                self.download_button.Enable(False)
+                self.stop_button.Enable(False)
+                self.fetch_button.Enable(True)
+                status[0] = '即将开始下载'
+            elif status[0] == 'Check':
+                self.download_button.Enable(True)
+                self.stop_button.Enable(False)
+                self.fetch_button.Enable(True)
+                status[0] = '检查输入!'
+            elif status[0] == '':
+                self.download_button.Enable(True)
+                self.stop_button.Enable(False)
+                self.fetch_button.Enable(True)
+                status[0] = ''
+            elif status[0] == 'Pause':
+                self.download_button.Enable(True)
+                self.stop_button.Enable(False)
+                self.fetch_button.Enable(True)
+                status[0] = '已暂停!'
+            elif status[0] == 'Fetch_Wait':
+                self.fetch_button.Enable(False)
+                status[0] = '获取列表中~'
+            elif status[0] == 'Fetch_Error':
+                self.fetch_button.Enable(True)
+                status[0] = '获取列表失败！'
+            elif status[0] == 'Fetch_Done':
+                self.fetch_button.Enable(True)
+                status[0] = '获取列表成功！'
+            self.statusBar.SetStatusText(status[0])
+            self.statusBar.SetStatusText(status[1], 1)
+            self.statusBar.SetStatusText(status[2], 2)
+            self.statusBar.SetStatusText(status[3], 3)
+            self.statusBar.SetStatusText(status[4], 4)
         except:
-            pass
+            print('App Exit!')
+
+    def setStatus(self):
+        while True:
+            status = copy.deepcopy(self.JCDown.status)
+            try:
+                wx.CallAfter(self.main_show_statusbar, status)
+                sleep(0.01)
+            except:
+                pass
 
     def status_thread(self):
         status_thread = threading.Thread(target=self.setStatus, daemon=True)
         status_thread.start()
 
-    def show_stream_list(self):
-        self.Stream_listCtrl.DeleteAllItems()
-        self.JCDown.ft_thread.join()
-        stream_info_dict = copy.deepcopy(self.JCDown.stream_info_dict)
-        print(stream_info_dict)
+    def main_show_stream_list(self, stream_info_dict):
         # ListCtrl显示设置
         try:
             for item in stream_info_dict:
-                print(str(item) + stream_info_dict[item]['ext'])
-                print(str(item) + stream_info_dict[item]['size'])
-                print(str(item) + stream_info_dict[item]['format'])
-                self.Stream_listCtrl.InsertItem(
-                    item, str(item+1))
-                self.Stream_listCtrl.SetItem(
-                    item, 1, stream_info_dict[item]['ext'])
-                self.Stream_listCtrl.SetItem(
-                    item, 2, stream_info_dict[item]['size'])
-                self.Stream_listCtrl.SetItem(
-                    item, 3, stream_info_dict[item]['format'])
+                if item == 'title':
+                    self.title_staticText.SetLabel('Title: ' +
+                                                   stream_info_dict['title'])
+                else:
+                    self.Stream_listCtrl.InsertItem(item, str(item + 1))
+                    self.Stream_listCtrl.SetItem(item, 1,
+                                                 stream_info_dict[item]['ext'])
+                    self.Stream_listCtrl.SetItem(
+                        item, 2, stream_info_dict[item]['size'])
+                    self.Stream_listCtrl.SetItem(
+                        item, 3, stream_info_dict[item]['format'])
         except:
             print('Error in: show_stream_CtrlList')
+
+    def show_stream_list(self):
+        self.JCDown.ft_thread.join()
+        self.stream_info_dict = copy.deepcopy(self.JCDown.stream_info_dict)
+        wx.CallAfter(self.main_show_stream_list, self.stream_info_dict)
+        wx.CallAfter(self.select_stream_limit_thread)
 
     def show_stream_list_thread(self):
         show_stream_list_thread = threading.Thread(
@@ -191,12 +185,38 @@ class MainWindow(basewin.baseMainWindow):
         show_stream_list_thread.start()
 
     def select_stream_index(self):
-        format_ID = self.Stream_listBox.GetSelection()
-        return int(format_ID)
+        if self.Stream_listCtrl.GetFirstSelected():
+            format_ID = self.Stream_listCtrl.GetFirstSelected()
+            return int(format_ID)
 
-    def Stream_listBoxOnListBox(self, event):
-        format_ID = self.Stream_listBox.GetSelections()
+    def _select_stream_limit(self, n):
+        print('You should select ' + str(n) + ' item/items')
+        while self.Stream_listCtrl.GetItemCount() and n == 1:
+            # 此处为限制单个选项
+            break
+        while self.Stream_listCtrl.GetItemCount() and n == 2:
+            # 此处为限制两个选项
+            break
+
+    def select_stream_limit_thread(self):
+        print('video count: ' + str(self.Stream_listCtrl.GetItemCount()))
+        if self.need_merge():
+            n = 2
+        else:
+            n = 1
+        sel_lim_thread = threading.Thread(
+            target=self._select_stream_limit(n), daemon=True)
+        sel_lim_thread.start()
+        # while True:
+        # if self.need_merge():
+        # pass
+        # else:
+        # pass
+
+    def Stream_listCtrlOnListItemSelected(self, event):
+        format_ID = self.Stream_listCtrl.GetFirstSelected()
         print('you select: ' + str(format_ID))
+        print(self.stream_info_dict[format_ID])
 
     def need_merge(self):
         if self.merge_VideoAndSound_checkBox.GetValue():
@@ -204,14 +224,8 @@ class MainWindow(basewin.baseMainWindow):
         else:
             return False
 
-    def get_large_image_links(self):
-        pass
-
     def exit_menuItemOnMenuSelection(self, event):
         wx.CallAfter(self.Destroy)
-
-    def next_link(self):
-        pass
 
     def rule_menuItemOnMenuSelection(self, event):
         # 设置对话框，网页抓取时xpath设置
@@ -220,7 +234,7 @@ class MainWindow(basewin.baseMainWindow):
     def about_menuItemOnMenuSelection(self, event):
         # 关于本程序
         about_program = '''本程序用来下载：
-    *YouTube以及其他国内外主流视频网站的视频
+    * YouTube以及其他国内外主流视频网站的视频
 
 本程序基于youtube_dl开发
 Email: xxmm@live.cn

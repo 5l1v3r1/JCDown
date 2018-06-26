@@ -172,6 +172,16 @@ class JYoutube(object):
                 if self.status[0] == 'Fetch_Done':
                     for i in range(5):
                         self.status[i] = ''
+            if self.status[0] == 'Select_One':
+                sleep(3)
+                if self.status[0] == 'Select_One':
+                    for i in range(5):
+                        self.status[i] = ''
+            if self.status[0] == 'Select_Two':
+                sleep(3)
+                if self.status[0] == 'Select_Two':
+                    for i in range(5):
+                        self.status[i] = ''
             sleep(0.01)
 
     def status_monitor(self):
@@ -199,22 +209,20 @@ class JYoutube(object):
             _ydl_info_file = os.path.join(os.getcwd(), '_subtitles.txt')
             _ydl_keys_file = os.path.join(os.getcwd(), '_info_keys.txt')
             output_keys = ['title', 'ext', 'formats']
-            # 以下为listbox中使用，listCtrl完成后删除
-            self.stream_list = ['']
-            self.stream_format_list = ['']
             # ListCtrl使用，记录格式信息
             self.stream_info_dict = {}
             stream_info_index = 0
             with youtube_dl.YoutubeDL(_ydl_opts_) as ydl_:
                 print('开始获取中')
                 info_dict = ydl_.extract_info(self._url, download=False)
-                with open(_ydl_keys_file, 'w') as f:
-                    for key in info_dict:
-                        f.write(key + '\n')
-                with open(_ydl_info_file, 'w') as f:
-                    for out_key in output_keys:
-                        f.write(
-                            out_key + ' : ' + str(info_dict[out_key]) + '\n')
+                # 输出获取的视频信息保存到文本文件中
+                # with open(_ydl_keys_file, 'w') as f:
+                    # for key in info_dict:
+                        # f.write(key + '\n')
+                # with open(_ydl_info_file, 'w') as f:
+                    # for out_key in output_keys:
+                        # f.write(out_key + ' : ' + str(info_dict[out_key]) +
+                                # '\n')
                 self.stream_list[0] = info_dict['title']
                 self.stream_info_dict['title'] = info_dict['title']
                 # ListCtrl使用
@@ -223,7 +231,7 @@ class JYoutube(object):
                     self.stream_info_dict[stream_info_index]["ext"] = item[
                         'ext']
                     try:
-                        size = 'Unknown'
+                        size = '-'
                         size_K = round(item['filesize'] / 1024, 2)
                         size_M = round(size_K / 1024, 2)
                         size_G = round(size_M / 1024, 2)
@@ -235,8 +243,7 @@ class JYoutube(object):
                             size = str(size_K) + 'KB'
                         self.stream_info_dict[stream_info_index]["size"] = size
                     except:
-                        self.stream_info_dict[stream_info_index][
-                            "size"] = 'Unknown'
+                        self.stream_info_dict[stream_info_index]["size"] = '-'
                     self.stream_info_dict[stream_info_index]["format"] = item[
                         'format']
                     self.stream_info_dict[stream_info_index][

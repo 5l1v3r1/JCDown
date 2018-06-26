@@ -3,7 +3,7 @@
 '''
 # =============================================================================
 #      FileName: JCDown.py
-#          Desc: download images from forum such as 蜂鸟 and 贴吧
+#          Desc: download videos from YouTube and other sites
 #        Author: Jase Chen
 #         Email: xxmm@live.cn
 #      HomePage: https://jase.im/
@@ -28,7 +28,7 @@ class MainWindow(basewin.baseMainWindow):
         self.url = ''
         self.localDir = ''
         self.status = 5 * ['']
-        self.statusBar.SetStatusWidths([110, 120, 130, 170, 100])
+        self.statusBar.SetStatusWidths([110, 130, 120, 170, 100])
         self.status_thread()
         self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
         self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
@@ -38,14 +38,41 @@ class MainWindow(basewin.baseMainWindow):
     def baseMainWindowOnClose(self, event):
         self.Destroy()
 
-    def set_format(self):
-        if self.Stream_listCtrl.GetFirstSelected() != -1:
-            format_id_index = self.Stream_listCtrl.GetFirstSelected()
-            format_id = self.stream_info_dict[format_id_index]['format_id']
-            print('Download: ' + format_id)
-            self.JCDown.set_format(format_id)
+    def select_checked(self):
+        if self.need_merge():
+            if self.Stream_listCtrl.GetSelectedItemCount() != 2:
+                self.JCDown.status[0] = 'Select_Two'
+                print('请选择两项')
+                return False
+            else:
+                print('已选择两项')
+                return True
+        elif self.Stream_listCtrl.GetSelectedItemCount(
+        ) != 1 and self.Stream_listCtrl.GetSelectedItemCount() != 0:
+            self.JCDown.status[0] = 'Select_One'
+            print('请选择一项')
+            return False
         else:
-            self.JCDown.set_format('best')
+            print('已选择一项')
+            return True
+
+    def set_format(self):
+        if self.need_merge():
+            format_id_index1 = self.Stream_listCtrl.GetFirstSelected()
+            format_id_index2 = self.Stream_listCtrl.GetNextSelected(
+                format_id_index1)
+            format_id1 = self.stream_info_dict[format_id_index1]['format_id']
+            format_id2 = self.stream_info_dict[format_id_index2]['format_id']
+            print('Download: ' + format_id1 + '+' + format_id2)
+            self.JCDown.set_format(format_id1 + '+' + format_id2)
+        else:
+            if self.Stream_listCtrl.GetFirstSelected() != -1:
+                format_id_index = self.Stream_listCtrl.GetFirstSelected()
+                format_id = self.stream_info_dict[format_id_index]['format_id']
+                print('Download: ' + format_id)
+                self.JCDown.set_format(format_id)
+            else:
+                self.JCDown.set_format('best')
 
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():
@@ -62,6 +89,7 @@ class MainWindow(basewin.baseMainWindow):
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
+            self.title_textCtrl.SetValue('')
             self.Stream_listCtrl.DeleteAllItems()
             self.title_staticText.SetLabel('Title: ')
             self.url = self.video_url_textCtrl.GetValue()
@@ -73,7 +101,7 @@ class MainWindow(basewin.baseMainWindow):
 
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
-        ) or not self.save_local_dirPicker.Path:
+        ) or not self.save_local_dirPicker.Path or not self.select_checked():
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
@@ -133,6 +161,10 @@ class MainWindow(basewin.baseMainWindow):
             elif status[0] == 'Fetch_Done':
                 self.fetch_button.Enable(True)
                 status[0] = '获取列表成功！'
+            elif status[0] == 'Select_One':
+                status[0] = '请选择一项！'
+            elif status[0] == 'Select_Two':
+                status[0] = '请选择两项！'
             self.statusBar.SetStatusText(status[0])
             self.statusBar.SetStatusText(status[1], 1)
             self.statusBar.SetStatusText(status[2], 2)
@@ -159,8 +191,7 @@ class MainWindow(basewin.baseMainWindow):
         try:
             for item in stream_info_dict:
                 if item == 'title':
-                    self.title_staticText.SetLabel('Title: ' +
-                                                   stream_info_dict['title'])
+                    self.title_textCtrl.SetValue(stream_info_dict['title'])
                 else:
                     self.Stream_listCtrl.InsertItem(item, str(item + 1))
                     self.Stream_listCtrl.SetItem(item, 1,
@@ -188,30 +219,6 @@ class MainWindow(basewin.baseMainWindow):
             format_ID = self.Stream_listCtrl.GetFirstSelected()
             return int(format_ID)
 
-    def _select_stream_limit(self, n):
-        print('You should select ' + str(n) + ' item/items')
-        while self.Stream_listCtrl.GetItemCount() and n == 1:
-            # 此处为限制单个选项
-            break
-        while self.Stream_listCtrl.GetItemCount() and n == 2:
-            # 此处为限制两个选项
-            break
-
-    def select_stream_limit_thread(self):
-        print('video count: ' + str(self.Stream_listCtrl.GetItemCount()))
-        if self.need_merge():
-            n = 2
-        else:
-            n = 1
-        sel_lim_thread = threading.Thread(
-            target=self._select_stream_limit(n), daemon=True)
-        sel_lim_thread.start()
-        # while True:
-        # if self.need_merge():
-        # pass
-        # else:
-        # pass
-
     def Stream_listCtrlOnListItemSelected(self, event):
         format_ID = self.Stream_listCtrl.GetFirstSelected()
         print('you select: ' + str(format_ID))
@@ -227,7 +234,7 @@ class MainWindow(basewin.baseMainWindow):
         wx.CallAfter(self.Destroy)
 
     def rule_menuItemOnMenuSelection(self, event):
-        # 设置对话框，网页抓取时xpath设置
+        # 设置对话框
         basewin.rule_Dialog(self).Show()
 
     def about_menuItemOnMenuSelection(self, event):

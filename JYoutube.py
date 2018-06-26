@@ -60,14 +60,41 @@ class JYoutube(object):
         if d['status'] == 'downloading':
             if d['speed']:
                 self.status[0] = 'Downloading'
-                self.status[1] = str(round(d['speed'] / 1024, 2)) + ' kB/s'
-                if d['eta']:
-                    self.status[2] = 'Remain: ' + str(
-                        d['eta'] // 60) + 'min' + str(d['eta'] % 60) + 'sec'
+                speed_k = round(d['speed'] / 1024, 2)
+                speed_m = round(speed_k / 1024, 2)
+                speed_g = round(speed_m / 1024, 2)
+                if speed_g >= 1:
+                    speed = str(speed_g) + ' GB/s'
+                elif speed_m >= 1:
+                    speed = str(speed_m) + ' MB/s'
                 else:
-                    self.status[2] = 'Remain: Unknown'
-                self.status[3] = 'Downloaded: ' + str(
-                    round(d['downloaded_bytes'] / (1024 * 1024), 2)) + 'MB'
+                    speed = str(speed_k) + ' KB/s'
+                self.status[1] = 'Speed: ' + speed
+                remain_s = d['eta']
+                remain_m = remain_s // 60
+                remain_h = remain_m // 60
+                remain_d = remain_h // 24
+                if remain_d >= 1:
+                    self.status[2] = 'Remain: ' + '> 1day'
+                elif remain_h >= 1:
+                    self.status[2] = 'Remain: ' + str(remain_h) + 'h' + str(
+                        round(remain_m % 60)) + 'm' + str(
+                            round(remain_s % 60)) + 's'
+                elif remain_m >= 1:
+                    self.status[2] = 'Remain: ' + str(remain_m) + 'm' + str(
+                        round(remain_s % 60)) + 's'
+                else:
+                    self.status[2] = 'Remain: ' + str(remain_s) + 's'
+                down_size_k = round(d['downloaded_bytes'] / 1024, 2)
+                down_size_m = round(down_size_k / 1024, 2)
+                down_size_g = round(down_size_m / 1024, 2)
+                if down_size_g >= 1:
+                    down_size = str(down_size_g) + 'GB'
+                elif down_size_m >= 1:
+                    down_size = str(down_size_m) + 'MB'
+                else:
+                    down_size = str(down_size_k) + 'KB'
+                self.status[3] = 'Downloaded: ' + down_size
         elif d['status'] == 'finished':
             print('Done downloading...')
             self.status[0] = 'Done'
@@ -186,8 +213,8 @@ class JYoutube(object):
                         f.write(key + '\n')
                 with open(_ydl_info_file, 'w') as f:
                     for out_key in output_keys:
-                        f.write(out_key + ' : ' + str(info_dict[out_key]) +
-                                '\n')
+                        f.write(
+                            out_key + ' : ' + str(info_dict[out_key]) + '\n')
                 self.stream_list[0] = info_dict['title']
                 self.stream_info_dict['title'] = info_dict['title']
                 # ListCtrl使用
@@ -212,8 +239,8 @@ class JYoutube(object):
                             "size"] = 'Unknown'
                     self.stream_info_dict[stream_info_index]["format"] = item[
                         'format']
-                    self.stream_info_dict[stream_info_index]["format_id"] = item[
-                        'format_id']
+                    self.stream_info_dict[stream_info_index][
+                        "format_id"] = item['format_id']
                     stream_info_index += 1
                 self.status[0] = 'Fetch_Done'
                 print('Fetch done.')

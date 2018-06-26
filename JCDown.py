@@ -28,7 +28,7 @@ class MainWindow(basewin.baseMainWindow):
         self.url = ''
         self.localDir = ''
         self.status = 5 * ['']
-        self.statusBar.SetStatusWidths([90, 90, 130, 190, 100])
+        self.statusBar.SetStatusWidths([110, 120, 130, 170, 100])
         self.status_thread()
         self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
         self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
@@ -39,7 +39,6 @@ class MainWindow(basewin.baseMainWindow):
         self.Destroy()
 
     def set_format(self):
-        print(self.Stream_listCtrl.GetFirstSelected())
         if self.Stream_listCtrl.GetFirstSelected() != -1:
             format_id_index = self.Stream_listCtrl.GetFirstSelected()
             format_id = self.stream_info_dict[format_id_index]['format_id']

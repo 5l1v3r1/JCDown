@@ -80,7 +80,6 @@ class MainWindow(basewin.baseMainWindow):
         else:
             self.title_textCtrl.SetValue('')
             self.Stream_listCtrl.DeleteAllItems()
-            self.title_staticText.SetLabel('Title: ')
             self.url = self.video_url_textCtrl.GetValue()
             self.JCDown.set_url(self.url)
             self.set_proxy()
@@ -193,7 +192,6 @@ class MainWindow(basewin.baseMainWindow):
         self.JCDown.ft_thread.join()
         self.stream_info_dict = copy.deepcopy(self.JCDown.stream_info_dict)
         wx.CallAfter(self.main_show_stream_list, self.stream_info_dict)
-        wx.CallAfter(self.select_stream_limit_thread)
 
     def show_stream_list_thread(self):
         show_stream_list_thread = threading.Thread(

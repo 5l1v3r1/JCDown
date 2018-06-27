@@ -38,26 +38,19 @@ class MainWindow(basewin.baseMainWindow):
     def baseMainWindowOnClose(self, event):
         self.Destroy()
 
-    def select_checked(self):
-        if self.need_merge():
-            if self.Stream_listCtrl.GetSelectedItemCount() != 2:
-                self.JCDown.status[0] = 'Select_Two'
-                print('请选择两项')
-                return False
-            else:
-                print('已选择两项')
-                return True
-        elif self.Stream_listCtrl.GetSelectedItemCount(
-        ) != 1 and self.Stream_listCtrl.GetSelectedItemCount() != 0:
-            self.JCDown.status[0] = 'Select_One'
-            print('请选择一项')
-            return False
+    def select_count_check(self):
+        if self.Stream_listCtrl.GetSelectedItemCount() == 2:
+            return 2
+        elif self.Stream_listCtrl.GetSelectedItemCount() == 1:
+            return 1
+        elif self.Stream_listCtrl.GetSelectedItemCount() == 0:
+            return 0
         else:
-            print('已选择一项')
-            return True
+            print('选项过多')
+            return -1
 
     def set_format(self):
-        if self.need_merge():
+        if self.select_count_check() == 2:
             format_id_index1 = self.Stream_listCtrl.GetFirstSelected()
             format_id_index2 = self.Stream_listCtrl.GetNextSelected(
                 format_id_index1)
@@ -65,14 +58,13 @@ class MainWindow(basewin.baseMainWindow):
             format_id2 = self.stream_info_dict[format_id_index2]['format_id']
             print('Download: ' + format_id1 + '+' + format_id2)
             self.JCDown.set_format(format_id1 + '+' + format_id2)
+        elif self.select_count_check() == 1:
+            format_id_index = self.Stream_listCtrl.GetFirstSelected()
+            format_id = self.stream_info_dict[format_id_index]['format_id']
+            print('Download: ' + format_id)
+            self.JCDown.set_format(format_id)
         else:
-            if self.Stream_listCtrl.GetFirstSelected() != -1:
-                format_id_index = self.Stream_listCtrl.GetFirstSelected()
-                format_id = self.stream_info_dict[format_id_index]['format_id']
-                print('Download: ' + format_id)
-                self.JCDown.set_format(format_id)
-            else:
-                self.JCDown.set_format('best')
+            self.JCDown.set_format('best')
 
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():
@@ -80,9 +72,6 @@ class MainWindow(basewin.baseMainWindow):
         else:
             proxy = ''
         self.JCDown.set_proxy(proxy)
-
-    def is_individual(self):
-        return self.image_save_individual_checkBox.GetValue()
 
     def fetch_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue():
@@ -101,7 +90,8 @@ class MainWindow(basewin.baseMainWindow):
 
     def download_buttonOnButtonClick(self, event):
         if not self.video_url_textCtrl.GetValue(
-        ) or not self.save_local_dirPicker.Path or not self.select_checked():
+        ) or not self.save_local_dirPicker.Path or self.select_count_check(
+        ) == -1:
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
@@ -161,10 +151,6 @@ class MainWindow(basewin.baseMainWindow):
             elif status[0] == 'Fetch_Done':
                 self.fetch_button.Enable(True)
                 status[0] = '获取列表成功！'
-            elif status[0] == 'Select_One':
-                status[0] = '请选择一项！'
-            elif status[0] == 'Select_Two':
-                status[0] = '请选择两项！'
             self.statusBar.SetStatusText(status[0])
             self.statusBar.SetStatusText(status[1], 1)
             self.statusBar.SetStatusText(status[2], 2)
@@ -223,12 +209,6 @@ class MainWindow(basewin.baseMainWindow):
         format_ID = self.Stream_listCtrl.GetFirstSelected()
         print('you select: ' + str(format_ID))
         print(self.stream_info_dict[format_ID])
-
-    def need_merge(self):
-        if self.merge_VideoAndSound_checkBox.GetValue():
-            return True
-        else:
-            return False
 
     def exit_menuItemOnMenuSelection(self, event):
         wx.CallAfter(self.Destroy)

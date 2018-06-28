@@ -30,6 +30,7 @@ class MainWindow(basewin.baseMainWindow):
         self.status = 5 * ['']
         self.statusBar.SetStatusWidths([110, 130, 120, 170, 100])
         self.status_thread()
+        self.status_monitor()
         self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
         self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
         self.Stream_listCtrl.InsertColumn(2, 'Size')
@@ -150,6 +151,12 @@ class MainWindow(basewin.baseMainWindow):
             elif status[0] == 'Fetch_Done':
                 self.fetch_button.Enable(True)
                 status[0] = '获取列表成功！'
+            elif status[0] == 'Select_One':
+                status[0] = '已选一项！'
+            elif status[0] == 'Select_Two':
+                status[0] = '已选两项！'
+            elif status[0] == 'Select_Error':
+                status[0] = '请检查选择项！'
             self.statusBar.SetStatusText(status[0])
             self.statusBar.SetStatusText(status[1], 1)
             self.statusBar.SetStatusText(status[2], 2)
@@ -170,6 +177,65 @@ class MainWindow(basewin.baseMainWindow):
     def status_thread(self):
         status_thread = threading.Thread(target=self.setStatus, daemon=True)
         status_thread.start()
+
+    def status_monitor_thread(self):
+        while True:
+            if self.JCDown.status[0] == 'Check':
+                sleep(3)
+                if self.JCDown.status[0] == 'Check':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Error':
+                if self.JCDown.status[4] == ' ':
+                    for i in range(1, 5):
+                        self.JCDown.status[i] = ''
+                    self.JCDown.status[0] = 'Pause'
+                else:
+                    sleep(3)
+                    if self.JCDown.status[0] == 'Error':
+                        for i in range(5):
+                            self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Done':
+                sleep(3)
+                if self.JCDown.status[0] == 'Done':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Pause':
+                sleep(3)
+                if self.JCDown.status[0] == 'Pause':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Fetch_Error':
+                sleep(3)
+                if self.JCDown.status[0] == 'Fetch_Error':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Fetch_Done':
+                sleep(3)
+                if self.JCDown.status[0] == 'Fetch_Done':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Select_One':
+                sleep(3)
+                if self.JCDown.status[0] == 'Select_One':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Select_Two':
+                sleep(3)
+                if self.JCDown.status[0] == 'Select_Two':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            if self.JCDown.status[0] == 'Select_Error':
+                sleep(3)
+                if self.JCDown.status[0] == 'Select_Error':
+                    for i in range(5):
+                        self.JCDown.status[i] = ''
+            sleep(0.01)
+
+    def status_monitor(self):
+        self.st_thread = threading.Thread(
+            target=self.status_monitor_thread, daemon=True)
+        self.st_thread.start()
 
     def main_show_stream_list(self, stream_info_dict):
         # ListCtrl显示设置
@@ -205,6 +271,13 @@ class MainWindow(basewin.baseMainWindow):
 
     def Stream_listCtrlOnListItemSelected(self, event):
         format_ID = self.Stream_listCtrl.GetFirstSelected()
+        count = self.Stream_listCtrl.GetSelectedItemCount()
+        if count == 1:
+            self.JCDown.status[0] = 'Select_One'
+        elif count == 2:
+            self.JCDown.status[0] = 'Select_Two'
+        else:
+            self.JCDown.status[0] = 'Select_Error'
         print('you select: ' + str(format_ID))
         print(self.stream_info_dict[format_ID])
 

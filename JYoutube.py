@@ -53,8 +53,6 @@ class JYoutube(object):
             'socket_timeout': 10,
         }
         self.status = 5 * ['']
-        self.stream_list = ['']
-        self.status_monitor()
 
     def my_hook(self, d):
         if d['status'] == 'downloading':
@@ -135,60 +133,6 @@ class JYoutube(object):
         else:
             os.chdir(path)
 
-    def status_monitor_thread(self):
-        while True:
-            if self.status[0] == 'Check':
-                sleep(3)
-                if self.status[0] == 'Check':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Error':
-                if self.status[4] == ' ':
-                    for i in range(1, 5):
-                        self.status[i] = ''
-                    self.status[0] = 'Pause'
-                else:
-                    sleep(3)
-                    if self.status[0] == 'Error':
-                        for i in range(5):
-                            self.status[i] = ''
-            if self.status[0] == 'Done':
-                sleep(3)
-                if self.status[0] == 'Done':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Pause':
-                sleep(3)
-                if self.status[0] == 'Pause':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Fetch_Error':
-                sleep(3)
-                if self.status[0] == 'Fetch_Error':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Fetch_Done':
-                sleep(3)
-                if self.status[0] == 'Fetch_Done':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Select_One':
-                sleep(3)
-                if self.status[0] == 'Select_One':
-                    for i in range(5):
-                        self.status[i] = ''
-            if self.status[0] == 'Select_Two':
-                sleep(3)
-                if self.status[0] == 'Select_Two':
-                    for i in range(5):
-                        self.status[i] = ''
-            sleep(0.01)
-
-    def status_monitor(self):
-        self.st_thread = threading.Thread(
-            target=self.status_monitor_thread, daemon=True)
-        self.st_thread.start()
-
     def download_thread(self):
         try:
             with youtube_dl.YoutubeDL(self._ydl_opts) as ydl:
@@ -218,12 +162,11 @@ class JYoutube(object):
                 # 输出获取的视频信息保存到文本文件中
                 # with open(_ydl_keys_file, 'w') as f:
                     # for key in info_dict:
-                        # f.write(key + '\n')
+                        # f.write(key + ':' + str(info_dict[key]) + '\n')
                 # with open(_ydl_info_file, 'w') as f:
                     # for out_key in output_keys:
                         # f.write(out_key + ' : ' + str(info_dict[out_key]) +
                                 # '\n')
-                self.stream_list[0] = info_dict['title']
                 self.stream_info_dict['title'] = info_dict['title']
                 # ListCtrl使用
                 for item in info_dict['formats'][::-1]:

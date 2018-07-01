@@ -65,7 +65,7 @@ class MainWindow(basewin.baseMainWindow):
             print('Download: ' + format_id)
             self.JCDown.set_format(format_id)
         else:
-            self.JCDown.set_format('best')
+            self.JCDown.pick_best_format()
 
     def set_proxy(self):
         if self.proxy_checkBox.GetValue():

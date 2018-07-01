@@ -38,15 +38,9 @@ class MyLogger(object):
 
 class JYoutube(object):
     def __init__(self):
-        self._running_flag = True
+        self.pick_best_format()
         self._ydl_opts = {
-            'format': 'best',
-            # 'format': 'best',
-            # 'postprocessors': [{
-            # 'key': 'FFmpegMergerPP',
-            # 'preferredcodec': 'mp3',
-            # 'preferredquality': '192',
-            # }],
+            'format': self._format,
             'logger': MyLogger(),
             'progress_hooks': [self.my_hook],
             'nocheckcertificate': True,
@@ -54,7 +48,20 @@ class JYoutube(object):
         }
         self.status = 5 * ['']
 
+    def pick_best_format(self):
+        def is_Exit_ffmpeg():
+            flag = os.system('ffmpeg -version')
+            if flag== 0:
+                return True
+            else:
+                return False
+        if is_Exit_ffmpeg():
+            self._format = 'bestvideo+bestaudio'
+        else:
+            self._format = 'best'
+
     def my_hook(self, d):
+        # 下载状态保存到self.status
         if d['status'] == 'downloading':
             if d['speed']:
                 self.status[0] = 'Downloading'
@@ -67,7 +74,8 @@ class JYoutube(object):
                     speed = str(speed_m) + ' MB/s'
                 else:
                     speed = str(speed_k) + ' KB/s'
-                self.status[1] = 'Speed: ' + speed
+                # 实时下载速度
+                self.status[1] = speed
                 remain_s = d['eta']
                 remain_m = remain_s // 60
                 remain_h = remain_m // 60
@@ -138,14 +146,21 @@ class JYoutube(object):
             with youtube_dl.YoutubeDL(self._ydl_opts) as ydl:
                 ydl.download([self._url])
         except:
-            self.status[0] = 'Error'
+            self.set_format('best')
+            print('预选最佳合并方案出错，改用best')
+            try:
+                with youtube_dl.YoutubeDL(self._ydl_opts) as ydl:
+                    ydl.download([self._url])
+            except:
+                self.status[0] = 'Error'
+                print('Download Error')
 
     def download(self):
-        self.dl_thread = threading.Thread(
-            target=self.download_thread, daemon=True)
+        self.dl_thread = threading.Thread(target=self.download_thread)
         self.dl_thread.start()
 
     def fetch_thread(self):
+        # 视频信息保存到self.stream_info_dict
         try:
             _ydl_opts_ = {}
             _ydl_opts_ = self._ydl_opts.copy()
@@ -161,12 +176,12 @@ class JYoutube(object):
                 info_dict = ydl_.extract_info(self._url, download=False)
                 # 输出获取的视频信息保存到文本文件中
                 # with open(_ydl_keys_file, 'w') as f:
-                    # for key in info_dict:
-                        # f.write(key + ':' + str(info_dict[key]) + '\n')
+                # for key in info_dict:
+                # f.write(key + ':' + str(info_dict[key]) + '\n')
                 # with open(_ydl_info_file, 'w') as f:
-                    # for out_key in output_keys:
-                        # f.write(out_key + ' : ' + str(info_dict[out_key]) +
-                                # '\n')
+                # for out_key in output_keys:
+                # f.write(out_key + ' : ' + str(info_dict[out_key]) +
+                # '\n')
                 self.stream_info_dict['title'] = info_dict['title']
                 # ListCtrl使用
                 for item in info_dict['formats'][::-1]:
@@ -220,13 +235,92 @@ class JYoutube(object):
             raise SystemError("PyThreadState_SetAsyncExc failed")
 
 
+class Multi_Down(object):
+    def __init__(self):
+        # 总的线程列表
+        self._thread_list = []
+        # 目前正在运行的线程数量
+        self._threading_count = 0
+        # 待运行的线程编号
+        self._threading_index = 0
+        self._localDir = os.path.join(os.getcwd(), 'video')
+
+    def init_url_list(self, url_list, count=1):
+        self._count = count
+        self._url_list = url_list
+
+    def _working_thread(self):
+        while True:
+            while self._threading_count < self._count:
+                if self._threading_index == len(self._thread_list):
+                    break
+                self._thread_list[self._threading_index].download()
+                print('Thread{} generated!'.format(self._threading_index))
+                self._threading_index += 1
+                self._threading_count += 1
+                print('Thread running: {}'.format(self._threading_count))
+            for i in range(self._threading_index):
+                if self._thread_list[i].status[0] == 'Done':
+                    print('                     Thread{} done!'.format(i))
+                    self._thread_list[i].status[0] = ''
+                    self._threading_count -= 1
+                    print('Thread running: {}'.format(self._threading_count))
+                if self._thread_list[i].status[0] == 'Error':
+                    print(
+                        '                                     Thread{} Error!'.
+                        format(i))
+                    self._thread_list[i].status[0] = ''
+                    self._threading_count -= 1
+                    print('Thread running: {}'.format(self._threading_count))
+            if self._threading_index == len(self._thread_list):
+                break
+
+    def working(self):
+        self.gene_threads()
+        working_thread = threading.Thread(target=self._working_thread)
+        working_thread.start()
+
+    def set_localDir(self, localDir):
+        if localDir:
+            self._localDir = localDir
+
+    def gene_threads(self):
+        if len(self._url_list) > len(self._thread_list):
+            for url in self._url_list[len(self._thread_list)::]:
+                index = len(self._thread_list)
+                self._thread_list.append('')
+                self._thread_list[index] = JYoutube()
+                self._thread_list[index].set_proxy("socks5://127.0.0.1:1080/")
+                self._thread_list[index].set_url(url)
+                self._thread_list[index].set_localDir(self._localDir)
+
+    def add_url(self, url):
+        if url:
+            self._url_list.append(url)
+            self.gene_threads()
+
+
 def main():
-    url = 'https://www.youtube.com/watch?v=9t2Egzzw21A'
-    mydown = JYoutube()
-    mydown.set_url(url)
-    # mydown.set_localDir('/Users/chenomg/aaa/aaaaa')
-    print(mydown._ydl_opts)
-    mydown.download()
+    total_list = [
+        'https://www.youtube.com/watch?v=jzbiRNaj_v0',
+        'https://www.youtube.com/watch?v=ui4jqQV7rco',
+        'https://www.youtube.com/watch?v=Nz-dPOjK1gQ',
+        'https://www.youtube.com/watch?v=r-AuLm7S3XE',
+    ]
+    Worker = Multi_Down()
+    Worker.init_url_list(total_list, 4)
+    Worker.set_localDir('/Volumes/40G/video')
+    Worker.working()
+    addd = [
+        'https://www.youtube.com/watch?v=PLDIhqMWH00',
+        'https://www.youtube.com/watch?v=EqREabQUALE',
+        'https://www.youtube.com/watch?v=AtKZKl7Bgu0',
+        'https://www.youtube.com/watch?v=0caYeLf-Lc4',
+        'https://www.youtube.com/watch?v=Exdt3upYpqA',
+        'https://www.youtube.com/watch?v=coYCDufkfPM',
+    ]
+    for url in addd:
+        Worker.add_url(url)
 
 
 if __name__ == "__main__":

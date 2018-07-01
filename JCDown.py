@@ -3,40 +3,54 @@
 '''
 # =============================================================================
 #      FileName: JCDown.py
-#          Desc: download videos from YouTube and other sites
+#          Desc: GUI: download videos from YouTube and other sites
 #        Author: Jase Chen
 #         Email: xxmm@live.cn
 #      HomePage: https://jase.im/
 #       Version: 0.0.1
 #       License: GPLv2
-#    LastChange: 2018-06-04 08:52:42
+#    LastChange: 2018-07-01 22:51:16
 #       History:
 # =============================================================================
 '''
 
 import wx
 import basewin
-import JYoutube
+import video_dl
 import threading
 from time import sleep
 import copy
 
 
 class MainWindow(basewin.baseMainWindow):
+    """
+    GUI应用，用于下载YouTube及其他支持的视频网站视频下载
+    """
     def init_main_window(self):
-        self.JCDown = JYoutube.JYoutube()
+        # 实例化单视频下载模块
+        self.JCDown = video_dl.VideoDownload()
+        # 下载视频网址
         self.url = ''
+        # 本地保存地址
         self.localDir = ''
+        # 从video_dl复制并保存下载状态
         self.status = 5 * ['']
+        # 状态栏分块
         self.statusBar.SetStatusWidths([110, 130, 120, 170, 100])
+        # 定时获取下载状态值并发送给主线程设置状态栏
         self.status_thread()
+        # 状态值经过三秒后重置
         self.status_monitor()
+        # 获取视频信息列表显示列名
         self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
         self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
         self.Stream_listCtrl.InsertColumn(2, 'Size')
         self.Stream_listCtrl.InsertColumn(3, 'Description', width=220)
 
     def baseMainWindowOnClose(self, event):
+        """
+        点击窗口关闭
+        """
         self.Destroy()
 
     def select_count_check(self):
@@ -195,6 +209,10 @@ class MainWindow(basewin.baseMainWindow):
                     if self.JCDown.status[0] == 'Error':
                         for i in range(5):
                             self.JCDown.status[i] = ''
+            if self.JCDown.status[4] == ' ':
+                for i in range(1, 5):
+                    self.JCDown.status[i] = ''
+                self.JCDown.status[0] = 'Pause'
             if self.JCDown.status[0] == 'Done':
                 sleep(3)
                 if self.JCDown.status[0] == 'Done':
@@ -294,6 +312,7 @@ class MainWindow(basewin.baseMainWindow):
     * YouTube以及其他国内外主流视频网站的视频
 
 本程序基于youtube_dl开发
+GitHub: https://github.com/chenomg/JCDown
 Email: xxmm@live.cn
 Created by Jase Chen'''
         wx.MessageBox(about_program, 'About', wx.OK | wx.ICON_INFORMATION)

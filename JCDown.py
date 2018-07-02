@@ -54,6 +54,9 @@ class MainWindow(basewin.baseMainWindow):
         self.Destroy()
 
     def select_count_check(self):
+        """
+        返回视频选择数量
+        """
         if self.Stream_listCtrl.GetSelectedItemCount() == 2:
             return 2
         elif self.Stream_listCtrl.GetSelectedItemCount() == 1:
@@ -65,7 +68,11 @@ class MainWindow(basewin.baseMainWindow):
             return -1
 
     def set_format(self):
+        """
+        设置下载格式
+        """
         if self.select_count_check() == 2:
+            # 若选择两项则使用合并视频和音频
             format_id_index1 = self.Stream_listCtrl.GetFirstSelected()
             format_id_index2 = self.Stream_listCtrl.GetNextSelected(
                 format_id_index1)
@@ -79,9 +86,13 @@ class MainWindow(basewin.baseMainWindow):
             print('Download: ' + format_id)
             self.JCDown.set_format(format_id)
         else:
+            # 未选时自动使用最佳画质格式
             self.JCDown.pick_best_format()
 
     def set_proxy(self):
+        """
+        设置代理proxy
+        """
         if self.proxy_checkBox.GetValue():
             proxy = self.proxy_textCtrl.GetValue()
         else:
@@ -89,12 +100,17 @@ class MainWindow(basewin.baseMainWindow):
         self.JCDown.set_proxy(proxy)
 
     def fetch_buttonOnButtonClick(self, event):
+        """
+        获取按钮事件
+        """
         if not self.video_url_textCtrl.GetValue():
             self.JCDown.status[0] = 'Check'
             print('Input Check...')
         else:
+            # 清空标题和列表栏
             self.title_textCtrl.SetValue('')
             self.Stream_listCtrl.DeleteAllItems()
+            # 设置获取参数
             self.url = self.video_url_textCtrl.GetValue()
             self.JCDown.set_url(self.url)
             self.set_proxy()
@@ -273,8 +289,10 @@ class MainWindow(basewin.baseMainWindow):
             print('Error in: show_stream_CtrlList')
 
     def show_stream_list(self):
+        # 等待获取视频信息线程结束
         self.JCDown.ft_thread.join()
         self.stream_info_dict = copy.deepcopy(self.JCDown.stream_info_dict)
+        # 将信息传递到主线程显示
         wx.CallAfter(self.main_show_stream_list, self.stream_info_dict)
 
     def show_stream_list_thread(self):

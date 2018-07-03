@@ -20,8 +20,10 @@ import os
 import threading
 import ctypes
 import copy
+import re
 from copy import deepcopy
 from time import sleep
+from subprocess import run
 
 
 class MyLogger(object):
@@ -50,10 +52,12 @@ class VideoDownload(object):
 
     def pick_best_format(self):
         def is_Exit_ffmpeg():
-            flag = os.system('ffmpeg -version')
-            if flag == 0:
+            flag = run('ffmpeg -version', shell=True)
+            if re.findall(r'returncode=0', str(flag)):
+                print('ffmpeg exist.')
                 return True
             else:
+                print('ffmpeg not exist.')
                 return False
 
         if is_Exit_ffmpeg():

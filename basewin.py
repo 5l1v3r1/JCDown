@@ -32,6 +32,7 @@ class baseMainWindow ( wx.Frame ):
 		self.edit_menu = wx.Menu()
 		self.rule_menuItem = wx.MenuItem( self.edit_menu, wx.ID_ANY, u"Setting", wx.EmptyString, wx.ITEM_NORMAL )
 		self.edit_menu.Append( self.rule_menuItem )
+		self.rule_menuItem.Enable( False )
 		
 		self.menubar.Append( self.edit_menu, u"编辑" ) 
 		

@@ -1,2 +1,2 @@
 # JCDown
-Download images & videos from Web 
+Download videos from Web 

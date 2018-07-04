@@ -26,6 +26,7 @@ class MainWindow(basewin.baseMainWindow):
     """
     GUI应用，用于下载YouTube及其他支持的视频网站视频下载
     """
+
     def init_main_window(self):
         # 实例化单视频下载模块
         self.JCDown = video_dl.VideoDownload()
@@ -40,7 +41,7 @@ class MainWindow(basewin.baseMainWindow):
         # 定时获取下载状态值并发送给主线程设置状态栏
         self.status_thread()
         # 状态值经过三秒后重置
-        self.status_monitor()
+        self.status_reset()
         # 获取视频信息列表显示列名
         self.Stream_listCtrl.InsertColumn(0, 'No.', width=40)
         self.Stream_listCtrl.InsertColumn(1, 'Format', width=60)
@@ -119,6 +120,9 @@ class MainWindow(basewin.baseMainWindow):
             self.show_stream_list_thread()
 
     def download_buttonOnButtonClick(self, event):
+        """
+        下载按钮事件
+        """
         if not self.video_url_textCtrl.GetValue(
         ) or not self.save_local_dirPicker.Path or self.select_count_check(
         ) == -1:
@@ -135,9 +139,15 @@ class MainWindow(basewin.baseMainWindow):
             self.JCDown.download()
 
     def stop_buttonOnButtonClick(self, event):
+        """
+        暂停按钮事件
+        """
         self.JCDown.stop()
 
     def main_show_statusbar(self, status):
+        """
+        显示应用状态栏信息
+        """
         try:
             if status[0] == 'Downloading':
                 self.download_button.Enable(False)
@@ -193,9 +203,13 @@ class MainWindow(basewin.baseMainWindow):
             self.statusBar.SetStatusText(status[3], 3)
             self.statusBar.SetStatusText(status[4], 4)
         except:
+            # 程序退出后无法设置状态栏
             print('App Exit!')
 
     def setStatus(self):
+        """
+        获取下载状态并传送到主线程显示
+        """
         while True:
             status = copy.deepcopy(self.JCDown.status)
             try:
@@ -205,10 +219,16 @@ class MainWindow(basewin.baseMainWindow):
                 pass
 
     def status_thread(self):
+        """
+        用于显示状态栏线程(获取下载状态并传送到主线程显示)
+        """
         status_thread = threading.Thread(target=self.setStatus, daemon=True)
         status_thread.start()
 
-    def status_monitor_thread(self):
+    def status_reset_thread(self):
+        """
+        重置下载状态值
+        """
         while True:
             if self.JCDown.status[0] == 'Check':
                 sleep(3)
@@ -217,9 +237,7 @@ class MainWindow(basewin.baseMainWindow):
                         self.JCDown.status[i] = ''
             if self.JCDown.status[0] == 'Error':
                 if self.JCDown.status[4] == ' ':
-                    for i in range(1, 5):
-                        self.JCDown.status[i] = ''
-                    self.JCDown.status[0] = 'Pause'
+                    pass
                 else:
                     sleep(3)
                     if self.JCDown.status[0] == 'Error':
@@ -266,9 +284,9 @@ class MainWindow(basewin.baseMainWindow):
                         self.JCDown.status[i] = ''
             sleep(0.01)
 
-    def status_monitor(self):
+    def status_reset(self):
         self.st_thread = threading.Thread(
-            target=self.status_monitor_thread, daemon=True)
+            target=self.status_reset_thread, daemon=True)
         self.st_thread.start()
 
     def main_show_stream_list(self, stream_info_dict):
@@ -303,9 +321,13 @@ class MainWindow(basewin.baseMainWindow):
     def select_stream_index(self):
         if self.Stream_listCtrl.GetFirstSelected():
             format_ID = self.Stream_listCtrl.GetFirstSelected()
+            # 返回视频选择序号
             return int(format_ID)
 
     def Stream_listCtrlOnListItemSelected(self, event):
+        """
+        点击视频列表事件
+        """
         format_ID = self.Stream_listCtrl.GetFirstSelected()
         count = self.Stream_listCtrl.GetSelectedItemCount()
         if count == 1:
@@ -318,6 +340,9 @@ class MainWindow(basewin.baseMainWindow):
         print(self.stream_info_dict[format_ID])
 
     def exit_menuItemOnMenuSelection(self, event):
+        """
+        点击菜单栏退出事件
+        """
         wx.CallAfter(self.Destroy)
 
     def rule_menuItemOnMenuSelection(self, event):

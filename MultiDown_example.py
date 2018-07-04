@@ -3,7 +3,7 @@
 '''
 # =============================================================================
 #      FileName: example.py
-#          Desc:
+#          Desc: 多任务下载示例
 #        Author: Jase Chen
 #         Email: xxmm@live.cn
 #      HomePage: https://jase.im/
@@ -13,13 +13,16 @@
 #       History:
 # =============================================================================
 '''
-from JYoutube import MultiDown
+from video_dl import MultiDown
 from lxml import html
 import requests
 from time import sleep
 
 
 class Extract_Video_URLs(object):
+    """
+    提取网址列表
+    """
     def __init__(self):
         self._headers = {
             'user-agent':
@@ -31,12 +34,12 @@ class Extract_Video_URLs(object):
         }
 
     def get_url_list(self, url):
-        # 获取网页
+        # 获取网址列表
         url_list = []
         response = requests.get(
             url, headers=self._headers, proxies=self._proxies)
-        print(response.status_code)
-        print(response.encoding)
+        print('response.status_code: ' + str(response.status_code))
+        print('response.encoding: ' + str(response.encoding))
         # 网页转换为lxml可用
         tree = html.fromstring(response.text)
         for url in tree.xpath('//div[@class="wrap"]/div/div/a/@href'):
@@ -46,7 +49,7 @@ class Extract_Video_URLs(object):
         return url_list
 
 def main():
-    url = ''
+    url = 'https://www.example.com'
     URLS = Extract_Video_URLs()
     url_list = URLS.get_url_list(url)
     print('Length of list: {}'.format(len(url_list)))

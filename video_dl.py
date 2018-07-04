@@ -51,6 +51,10 @@ class VideoDownload(object):
         self.status = 5 * ['']
 
     def pick_best_format(self):
+        """
+        检测系统是否存在ffmpeg，存在的话视频默认格式选择bestvideo+bestaudio, 否则选择best
+        """
+
         def is_Exit_ffmpeg():
             flag = run('ffmpeg -version', shell=True)
             if re.findall(r'returncode=0', str(flag)):
@@ -69,48 +73,65 @@ class VideoDownload(object):
         # 下载状态保存到self.status
         if d['status'] == 'downloading':
             if d['speed']:
-                self.status[0] = 'Downloading'
-                speed_k = round(d['speed'] / 1024, 2)
-                speed_m = round(speed_k / 1024, 2)
-                speed_g = round(speed_m / 1024, 2)
-                if speed_g >= 1:
-                    speed = str(speed_g) + ' GB/s'
-                elif speed_m >= 1:
-                    speed = str(speed_m) + ' MB/s'
-                else:
-                    speed = str(speed_k) + ' KB/s'
-                # 实时下载速度
-                self.status[1] = speed
-                remain_s = d['eta']
-                remain_m = remain_s // 60
-                remain_h = remain_m // 60
-                remain_d = remain_h // 24
-                if remain_d >= 1:
-                    self.status[2] = 'Remain: ' + '> 1day'
-                elif remain_h >= 1:
-                    self.status[2] = 'Remain: ' + str(remain_h) + 'h' + str(
-                        round(remain_m % 60)) + 'm' + str(
+
+                def speed_display(speed_B):
+                    # 速度显示
+                    speed_k = round(speed_B / 1024, 2)
+                    speed_m = round(speed_k / 1024, 2)
+                    speed_g = round(speed_m / 1024, 2)
+                    if speed_g >= 1:
+                        speed = str(speed_g) + ' GB/s'
+                    elif speed_m >= 1:
+                        speed = str(speed_m) + ' MB/s'
+                    else:
+                        speed = str(speed_k) + ' KB/s'
+                    return speed
+
+                def remain_display(remain_s):
+                    # 剩余时间显示
+                    remain_m = remain_s // 60
+                    remain_h = remain_m // 60
+                    remain_d = remain_h // 24
+                    if remain_d >= 1:
+                        remain = 'Remain: ' + '> 1day'
+                    elif remain_h >= 1:
+                        remain = 'Remain: ' + str(remain_h) + 'h' + str(
+                            round(remain_m % 60)) + 'm' + str(
+                                round(remain_s % 60)) + 's'
+                    elif remain_m >= 1:
+                        remain = 'Remain: ' + str(remain_m) + 'm' + str(
                             round(remain_s % 60)) + 's'
-                elif remain_m >= 1:
-                    self.status[2] = 'Remain: ' + str(remain_m) + 'm' + str(
-                        round(remain_s % 60)) + 's'
-                else:
-                    self.status[2] = 'Remain: ' + str(remain_s) + 's'
-                down_size_k = round(d['downloaded_bytes'] / 1024, 2)
-                down_size_m = round(down_size_k / 1024, 2)
-                down_size_g = round(down_size_m / 1024, 2)
-                if down_size_g >= 1:
-                    down_size = str(down_size_g) + 'GB'
-                elif down_size_m >= 1:
-                    down_size = str(down_size_m) + 'MB'
-                else:
-                    down_size = str(down_size_k) + 'KB'
-                self.status[3] = 'Downloaded: ' + down_size
+                    else:
+                        remain = 'Remain: ' + str(remain_s) + 's'
+                    return remain
+
+                def downloaded_size_display(downloaded_bytes):
+                    # 已下载大小显示
+                    down_size_k = round(downloaded_bytes / 1024, 2)
+                    down_size_m = round(down_size_k / 1024, 2)
+                    down_size_g = round(down_size_m / 1024, 2)
+                    if down_size_g >= 1:
+                        down_size = 'Downloaded: ' + str(down_size_g) + 'GB'
+                    elif down_size_m >= 1:
+                        down_size = 'Downloaded: ' + str(down_size_m) + 'MB'
+                    else:
+                        down_size = 'Downloaded: ' + str(down_size_k) + 'KB'
+                    return down_size
+
+                # 设置状态值
+                self.status[0] = 'Downloading'
+                self.status[1] = speed_display(d['speed'])
+                self.status[2] = remain_display(d['eta'])
+                self.status[3] = downloaded_size_display(d['downloaded_bytes'])
         elif d['status'] == 'finished':
             print('Done downloading...')
             self.status[0] = 'Done'
+            self.status[1] = ''
+            self.status[2] = ''
+            self.status[3] = ''
         elif d['status'] == 'error':
-            self.status[0] = 'Error'
+            # 下载在try内
+            pass
 
     def set_proxy(self, proxy):
         # 设置代理，为空时清除代理
@@ -121,15 +142,18 @@ class VideoDownload(object):
                 self._ydl_opts.pop('proxy')
 
     def set_format(self, format_id):
+        # 设置下载格式
         self._ydl_opts['format'] = format_id
 
     def set_url(self, url):
+        # 设置下载网址
         self._url = url
 
     def set_logger(self, Logger):
         self._ydl_opts['logger'] = Logger
 
     def set_localDir(self, path):
+        # 设置本地保存地址
         if not os.path.exists(path):
             try:
                 os.makedirs(path)
@@ -147,6 +171,7 @@ class VideoDownload(object):
             os.chdir(path)
 
     def download_thread(self):
+        # 下载任务线程
         try:
             with youtube_dl.YoutubeDL(self._ydl_opts) as ydl:
                 ydl.download([self._url])
@@ -162,6 +187,9 @@ class VideoDownload(object):
                         ydl.download([self._url])
                 except:
                     self.status[0] = 'Error'
+                    self.status[1] = ''
+                    self.status[2] = ''
+                    self.status[3] = ''
                     print('Download Error')
 
     def download(self):
@@ -198,7 +226,6 @@ class VideoDownload(object):
                     self.stream_info_dict[stream_info_index]["ext"] = item[
                         'ext']
                     try:
-                        size = '-'
                         size_K = round(item['filesize'] / 1024, 2)
                         size_M = round(size_K / 1024, 2)
                         size_G = round(size_M / 1024, 2)
@@ -253,35 +280,43 @@ class MultiDown(object):
         self._threading_count = 0
         # 待运行的线程编号
         self._threading_index = 0
+        # 默认保存目录
         self._localDir = os.path.join(os.getcwd(), 'video')
+        # 默认proxy
+        self._proxy = ''
 
     def init_url_list(self, url_list, count=1):
+        # 初始化链接列表和同时下载数
         self._count = count
         self._url_list = url_list
 
     def _working_thread(self):
+        # 工作线程
         while True:
+            # 若目前线程少于预设值，则生产线程直至数量到达预设
             while self._threading_count < self._count:
+                # 线程数量达到后退出循环
                 if self._threading_index == len(self._thread_list):
                     break
+                # 启动下一个下载任务线程
                 self._thread_list[self._threading_index].download()
                 print('Thread{} generated!'.format(self._threading_index))
                 self._threading_index += 1
                 self._threading_count += 1
                 print('Thread running: {}'.format(self._threading_count))
+            # 检测每个下载线程的状态
             for i in range(self._threading_index):
                 if self._thread_list[i].status[0] == 'Done':
-                    print('                     Thread{} done!'.format(i))
+                    print('              Thread{} Done!'.format(i))
                     self._thread_list[i].status[0] = ''
                     self._threading_count -= 1
                     print('Thread running: {}'.format(self._threading_count))
                 if self._thread_list[i].status[0] == 'Error':
-                    print(
-                        '                                     Thread{} Error!'.
-                        format(i))
+                    print('                         Thread{} Error!'.format(i))
                     self._thread_list[i].status[0] = ''
                     self._threading_count -= 1
                     print('Thread running: {}'.format(self._threading_count))
+            # 下载完毕
             if self._threading_index == len(self._thread_list):
                 break
 
@@ -291,20 +326,28 @@ class MultiDown(object):
         working_thread.start()
 
     def set_localDir(self, localDir):
+        # 设置本地保存地址地址
         if localDir:
             self._localDir = localDir
 
+    def set_proxy(self, proxy):
+        # 设置代理
+        if proxy:
+            self._proxy = proxy
+
     def gene_threads(self):
+        # 根据链接列表生产线啊(若链接数量大于已生产线程数量)
         if len(self._url_list) > len(self._thread_list):
             for url in self._url_list[len(self._thread_list)::]:
                 index = len(self._thread_list)
                 self._thread_list.append('')
                 self._thread_list[index] = VideoDownload()
-                self._thread_list[index].set_proxy("socks5://127.0.0.1:1080/")
+                self._thread_list[index].set_proxy(self._proxy)
                 self._thread_list[index].set_url(url)
                 self._thread_list[index].set_localDir(self._localDir)
 
     def add_url(self, url):
+        # 在已有下载列表中添加新的链接
         if url:
             self._url_list.append(url)
             self.gene_threads()
@@ -320,6 +363,7 @@ def main():
     Worker = MultiDown()
     Worker.init_url_list(total_list, 4)
     Worker.set_localDir('/Volumes/40G/video')
+    Worker.set_proxy("socks5://127.0.0.1:1080/")
     Worker.working()
     addd = [
         'https://www.youtube.com/watch?v=PLDIhqMWH00',

@@ -54,6 +54,7 @@ def main():
     url_list = URLS.get_url_list(url)
     print('Length of list: {}'.format(len(url_list)))
     Worker = MultiDown()
+    Worker.set_proxy("socks5://127.0.0.1:1080")
     Worker.init_url_list(url_list, 8)
     Worker.set_localDir('/Volumes/40G/video')
     Worker.working()
